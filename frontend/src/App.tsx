@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
 import Layout from "./components/layout/Layout";
 
+
 // Pages
 import HomePage from "./pages/HomePage";
 // import ProductsPage from "./pages/products/ProductsPage";
@@ -18,6 +19,7 @@ import HomePage from "./pages/HomePage";
 // import ProductManagementPage from "./pages/admin/ProductManagementPage";
 // import UserManagementPage from "./pages/admin/UserManagementPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProductForm from "./pages/ProductForm";
 
 // // Auth guards
 // import PrivateRoute from "./components/auth/PrivateRoute";
@@ -35,6 +37,8 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<HomePage />} />
+              <Route path="/products/create" element={<ProductForm />} />
+              <Route path="/products/edit/:productId" element={<ProductForm />} />  
               {/* <Route path="/products" element={<ProductsPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
