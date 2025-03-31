@@ -74,6 +74,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password }: LoginUserInput = req.body;
+    console.log(email, password);
 
     // Check if user exists
     const user = await User.findOne({ email }).select("+password");
