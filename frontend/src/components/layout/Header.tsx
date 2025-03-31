@@ -1,125 +1,104 @@
-import { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthContext";
+// import { useState, useContext } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { AuthContext } from "../../contexts/AuthContext";
+import { Search, ShoppingCart, User, Star } from "lucide-react";
+
 
 const Header = () => {
-  const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
+  // const navigate = useNavigate();
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
+  // const handleLogout = async () => {
+  //   await logout();
+  //   navigate("/login");
+  // };
 
   return (
-    <header className="bg-white shadow-md">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold text-blue-600">
-          Product Management
-        </Link>
+    <header className="w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px]">
+      {/* Desktop Layout */}
+      <div className="hidden md:flex md:items-center md:justify-between w-full h-full">
+        <div className="flex items-center flex-1 min-w-0">
+          {/* Logo */}
+          <div className="flex space-x-2 shrink-0">
+            <h1 className="text-2xl font-bold">Management</h1>
+            <span className="text-[9px] pt-4">Chuwa</span>
+          </div>
 
-        <div className="lg:hidden">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 text-gray-600 hover:text-gray-900"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {isMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
+          {/* Search Bar - Desktop */}
+          <div className="flex-1 ml-4 lg:ml-14 min-w-0 max-w-[500px]">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full p-2.5 pl-4 pr-8 rounded text-black text-sm h-10"
+              />
+              <Search className="absolute right-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Element - Desktop */}
+        <div className="flex items-center space-x-4 lg:space-x-6 shrink-0 ml-4">
+          <div className="flex items-center space-x-3 cursor-pointer hover:text-gray-300 transition relative">
+            <div className="relative">
+              <User className="w-6 h-6" />
+              <Star className="w-3 h-3 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+            </div>
+            <span className="hidden lg:inline text-sm">Sign Out</span>
+          </div>
+          
+          <div className="relative flex items-center cursor-pointer hover:text-gray-300 transition">
+            <div className="relative">
+              <ShoppingCart className="w-6 h-6" />
+              <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                2
+              </span>
+            </div>
+            <span className="ml-3 text-sm">$8.00</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile Layout */}
+      <div className="flex flex-col md:hidden space-y-2 py-1">
+        {/* Logo and Icons Row */}
+        <div className="flex items-center justify-between">
+          {/* Logo for Mobile */}
+          <div className="flex items-center">
+            <span className="text-xl font-bold">M</span>
+            <span className="text-[8px] ml-0.5 pt-2">Chuwa</span>
+          </div>
+          
+          {/* Right Icons for Mobile */}
+          <div className="flex items-center space-x-7">
+            <div className="relative">
+              <User className="w-5 h-5" />
+              <Star className="w-2.5 h-2.5 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <ShoppingCart className="w-5 h-5" />
+                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                  2
+                </span>
+              </div>
+              <span className="text-xs">$0.00</span>
+            </div>
+          </div>
         </div>
 
-        <nav
-          className={`lg:flex items-center ${
-            isMenuOpen
-              ? "block absolute top-16 left-0 right-0 bg-white shadow-md z-10 p-4"
-              : "hidden"
-          } lg:static lg:shadow-none`}
-        >
-          <ul className="flex flex-col lg:flex-row items-center gap-6">
-            <li>
-              <Link to="/" className="text-gray-600 hover:text-blue-600">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/products"
-                className="text-gray-600 hover:text-blue-600"
-              >
-                Products
-              </Link>
-            </li>
-
-            {isAuthenticated ? (
-              <>
-                {isAdmin && (
-                  <li>
-                    <Link
-                      to="/admin"
-                      className="text-gray-600 hover:text-blue-600"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  </li>
-                )}
-                <li>
-                  <span className="text-gray-600 mr-2">
-                    Welcome, {user?.username}
-                  </span>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <Link
-                    to="/login"
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
-                  >
-                    Login
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/register"
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-                  >
-                    Register
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
+        {/* Search Bar - Mobile (Full Width) */}
+        <div className="w-full">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full px-4 py-2 rounded bg-white text-black text-sm h-9"
+            />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+          </div>
+        </div>
       </div>
     </header>
   );
