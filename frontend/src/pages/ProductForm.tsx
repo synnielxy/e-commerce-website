@@ -6,8 +6,7 @@ const ProductManagement = () => {
   const isEditMode = !!productId;
 
   return (
-    <div>
-      <h1>{isEditMode ? 'Edit Product' : 'Create New Product'}</h1>
+    <div className='flex items-center justify-center' >
       <ProductForm 
         productId={productId} 
         isEditMode={isEditMode} 
