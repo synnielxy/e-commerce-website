@@ -1,5 +1,5 @@
 import React from "react";
-
+import SignInForm from "@/components/auth/SignInForm";
 const HomePage = () => {
   return (
     <div className="max-w-4xl mx-auto">
@@ -8,6 +8,7 @@ const HomePage = () => {
         Welcome to the product management dashboard where you can browse and
         manage products.
       </p>
+      <SignInForm />
     </div>
   );
 };
