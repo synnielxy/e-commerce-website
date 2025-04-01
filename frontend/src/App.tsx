@@ -13,7 +13,7 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
 // import ProductsPage from "./pages/products/ProductsPage";
 // import ProductDetailPage from "./pages/products/ProductDetailPage";
-// import LoginPage from "./pages/auth/LoginPage";
+import LoginPage from "@/pages/auth/LoginPage";
 // import RegisterPage from "./pages/auth/RegisterPage";
 // import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 // import ProductManagementPage from "./pages/admin/ProductManagementPage";
@@ -40,9 +40,9 @@ function App() {
               <Route path="/products/create" element={<ProductForm />} />
               <Route path="/products/edit/:productId" element={<ProductForm />} />  
               {/* <Route path="/products" element={<ProductsPage />} />
-              <Route path="/products/:id" element={<ProductDetailPage />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} /> */}
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} /> */}
+              {/* <Route path="/register" element={<RegisterPage />} />  */}
 
               {/* Protected routes */}
               {/* <Route
