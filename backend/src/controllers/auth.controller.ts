@@ -39,6 +39,7 @@ export const register = async (req: Request, res: Response) => {
       username,
       email,
       password,
+      // role: UserRole.ADMIN,
     });
 
     // Generate token
