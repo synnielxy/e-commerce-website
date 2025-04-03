@@ -117,3 +117,10 @@ backend/
 ## License
 
 This project is licensed under the MIT License.
+
+## Resources
+
+1. [Postman](https://chuwa-ecommerce.postman.co/workspace/Chuwa-ecommerce-Workspace~d7578a21-c0e2-4095-8a3d-9ad9da458cdd/overview)
+2. [Dev requirement](https://netorg5698319-my.sharepoint.com/:w:/r/personal/alexchen_chuwaamerica_com/_layouts/15/Doc.aspx?sourcedoc=%7BAB1C6CC7-D00E-46F3-890F-64080C36BE57%7D&file=Project-A%202.docx&action=default&mobileredirect=true)
+3. [MongoDB](https://cloud.mongodb.com/v2/67db3daa5267eb02f38b2dc0#/overview)
+
