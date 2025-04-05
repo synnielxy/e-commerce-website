@@ -1,4 +1,5 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
+import AuthService from "@/services/auth.service";
 
 // Define a minimal user type
 interface User {
@@ -30,13 +31,30 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(AuthService.getUser());
+
+  useEffect(() => {
+    // Check if user is authenticated on mount
+    if (AuthService.isAuthenticated()) {
+      // Verify the token is still valid
+      AuthService.getCurrentUser()
+        .then((currentUser) => {
+          setUser(currentUser);
+        })
+        .catch(() => {
+          // If token is invalid, clear everything
+          AuthService.logout();
+          setUser(null);
+        });
+    }
+  }, []);
 
   const login = (userData: User) => {
     setUser(userData);
   };
 
   const logout = () => {
+    AuthService.logout();
     setUser(null);
   };
 
