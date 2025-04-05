@@ -32,7 +32,6 @@ const queryClient = new QueryClient();
 
 function AppRoutes() {
   const { user } = useContext(AuthContext);
-  console.log(user);
 
   return (
     <Routes>

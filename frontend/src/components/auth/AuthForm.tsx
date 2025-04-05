@@ -10,9 +10,15 @@ interface AuthFormProps {
   mode: AuthMode;
   onSubmit: (data: any) => Promise<void>;
   onBack?: () => void;
+  error?: string | null;
 }
 
-export default function AuthForm({ mode, onSubmit, onBack }: AuthFormProps) {
+export default function AuthForm({
+  mode,
+  onSubmit,
+  onBack,
+  error,
+}: AuthFormProps) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -83,11 +89,9 @@ export default function AuthForm({ mode, onSubmit, onBack }: AuthFormProps) {
         setIsSubmitted(true);
       }
     } catch (err) {
-      setErrors((prev) => ({
-        ...prev,
-        email:
-          mode === "login" ? "Invalid email or password" : "An error occurred",
-      }));
+      // Error handling is now done in the parent component
+      // Prevent form submission
+      return;
     }
   };
 
@@ -156,6 +160,12 @@ export default function AuthForm({ mode, onSubmit, onBack }: AuthFormProps) {
           </p>
         )}
       </div>
+
+      {error && (
+        <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-600">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {mode === "register" && (
