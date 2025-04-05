@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import productRoutes from "./routes/product.routes";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import cartRoutes from "./routes/cart.routes";
 
 import { notFound, errorHandler } from "./middleware/error.middleware";
 import connectDB from "./config/db";
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Error handling middleware
 app.use(notFound);
