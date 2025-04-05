@@ -21,6 +21,7 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductForm from "./pages/ProductForm";
 import { useContext } from "react";
+import AdminRoute from "./components/auth/AdminRoute";
 
 // // Auth guards
 // import PrivateRoute from "./components/auth/PrivateRoute";
@@ -40,43 +41,37 @@ function AppRoutes() {
         path="/"
         element={user ? <ProductsPage /> : <Navigate to="/login" replace />}
       />
-      <Route path="/products" element={<ProductsPage />} />
-      <Route path="/products/create" element={<ProductForm />} />
-      <Route path="/products/edit/:productId" element={<ProductForm />} />
-      <Route path="/products/:id" element={<ProductDetailPage />} />
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-      {/* Protected routes */}
-      {/* <Route
-        path="/admin"
-        element={
-          <AdminRoute>
-            <AdminDashboardPage />
-          </AdminRoute>
-        }
+      <Route
+        path="/products"
+        element={user ? <ProductsPage /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/products/:id"
+        element={user ? <ProductDetailPage /> : <Navigate to="/login" replace />}
       />
 
       <Route
-        path="/admin/products"
+        path="/products/create"
         element={
           <AdminRoute>
-            <ProductManagementPage />
+            <ProductForm />
           </AdminRoute>
         }
       />
-
       <Route
-        path="/admin/users"
+        path="/products/edit/:productId"
         element={
           <AdminRoute>
-            <UserManagementPage />
+            <ProductForm />
           </AdminRoute>
         }
-      /> */}
-
+      />
+      
       {/* Not found */}
       <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
