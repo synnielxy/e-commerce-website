@@ -14,7 +14,8 @@ import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import LoginPage from "@/pages/auth/LoginPage";
-// import RegisterPage from "./pages/auth/RegisterPage";
+import RegisterPage from "@/pages/auth/RegisterPage";
+import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 // import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 // import ProductManagementPage from "./pages/admin/ProductManagementPage";
 // import UserManagementPage from "./pages/admin/UserManagementPage";
@@ -41,8 +42,11 @@ function App() {
               <Route path="/products/create" element={<ProductForm />} />
               <Route path="/products/edit/:productId" element={<ProductForm />} />  
               <Route path="/products/:id" element={<ProductDetailPage />} />
+              
               <Route path="/login" element={<LoginPage />} />
-              {/* <Route path="/register" element={<RegisterPage />} />  */}
+              <Route path="/register" element={<RegisterPage />} /> 
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
 
               {/* Protected routes */}
               {/* <Route

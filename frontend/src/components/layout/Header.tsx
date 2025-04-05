@@ -1,18 +1,17 @@
-// import { useState, useContext } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import { AuthContext } from "../../contexts/AuthContext";
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 import { Search, ShoppingCart, User, Star } from "lucide-react";
 
-
 const Header = () => {
-  // const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
-  // const navigate = useNavigate();
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // const handleLogout = async () => {
-  //   await logout();
-  //   navigate("/login");
-  // };
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <header className="w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px]">
@@ -37,17 +36,36 @@ const Header = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Right Element - Desktop */}
         <div className="flex items-center space-x-4 lg:space-x-6 shrink-0 ml-4">
-          <div className="flex items-center space-x-3 cursor-pointer hover:text-gray-300 transition relative">
+          <div className="flex items-center space-x-3 cursor-pointer transition relative">
             <div className="relative">
               <User className="w-6 h-6" />
               <Star className="w-3 h-3 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
             </div>
-            <span className="hidden lg:inline text-sm">Sign Out</span>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <span className="hidden lg:inline text-sm">
+                  {user?.username}
+                </span>
+                <span
+                  className="hidden lg:inline text-sm cursor-pointer  hover:text-gray-300"
+                  onClick={handleLogout}
+                >
+                  Sign Out
+                </span>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden lg:inline text-sm  hover:text-gray-300"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
-          
+
           <div className="relative flex items-center cursor-pointer hover:text-gray-300 transition">
             <div className="relative">
               <ShoppingCart className="w-6 h-6" />
@@ -59,7 +77,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Layout */}
       <div className="flex flex-col md:hidden space-y-2 py-1">
         {/* Logo and Icons Row */}
@@ -69,7 +87,7 @@ const Header = () => {
             <span className="text-xl font-bold">M</span>
             <span className="text-[8px] ml-0.5 pt-2">Chuwa</span>
           </div>
-          
+
           {/* Right Icons for Mobile */}
           <div className="flex items-center space-x-7">
             <div className="relative">
