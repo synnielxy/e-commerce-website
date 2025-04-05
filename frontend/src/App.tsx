@@ -48,11 +48,11 @@ function AppRoutes() {
 
       <Route
         path="/products"
-        element={user ? <ProductsPage /> : <Navigate to="/login" replace />}
+        element={user ? <ProductsPage /> : <LoginPage />}
       />
       <Route
         path="/products/:id"
-        element={user ? <ProductDetailPage /> : <Navigate to="/login" replace />}
+        element={user ? <ProductDetailPage /> : <LoginPage />}
       />
 
       <Route
@@ -71,7 +71,7 @@ function AppRoutes() {
           </AdminRoute>
         }
       />
-      
+
       {/* Not found */}
       <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
