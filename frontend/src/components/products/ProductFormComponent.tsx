@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useState} from 'react';
 import axios from 'axios';
 
 interface ProductFormProps {
@@ -19,8 +20,10 @@ interface FormValues {
 
 const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMode }) => {
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState('')
+  const [imageError, setImageError] = useState(false)
   
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>({
     defaultValues: {
       name: '',
       description: '',
@@ -31,6 +34,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
     }
   });
 
+  {/* submit form data / edit form data */}
   const onSubmit = async (data: FormValues) => {
     try {
       console.log('Product data:', data);
@@ -64,6 +68,16 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
     }
   };
 
+  {/* handle 'upload' button click by setting image preview state*/}
+  const handleImageUpload = () => {
+    const imageUrl = watch('imageUrl');
+    if (imageUrl) {
+      setImagePreview(imageUrl);
+      setImageError(false)
+    }else{
+      setImagePreview('')
+    }
+  }
 
   // reusable css format for form labels and input boxes
   const labelFormat = "block text-base font-medium mb-2 px-1 text-[#6B7280]"
@@ -74,9 +88,12 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 sm:text-left text-center ">
         {isEditMode ? 'Edit Product' : 'Create Product'}
       </h1>
-      
+
+     
       <div className="bg-white w-full min-w-[310px] max-w-[660px] py-10 mx-auto sm:ml-0 p-4 sm:p-8 md:p-12 rounded-md">
         <form onSubmit={handleSubmit(onSubmit)}>
+
+          {/* Product name */}
           <div className="mb-6">
             <label className={labelFormat}>
               Product name
@@ -88,6 +105,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
             {errors.name && <span className="text-red-500 text-sm">This field is required</span>}
           </div>
           
+          {/* Product description */}
           <div className="mb-4 sm:mb-6">
             <label className={labelFormat}>
               Product Description
@@ -99,6 +117,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
           </div>
           
           {/* On mobile, one column; on larger screens, use two columns */}
+          {/* Category and price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={labelFormat}>
@@ -128,6 +147,8 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
             </div>
           </div>
           
+          {/* On mobile, one column; on larger screens, use two columns */}
+          {/* In stock quantity and image link */}
           <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 mb-6">
             <div className='sm:col-span-2'>
               <label className={`${labelFormat} p-0`}>
@@ -150,6 +171,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
                   className={inputBoxFormat}/>
                 <button
                   type="button"
+                  onClick={handleImageUpload}
                   className="absolute text-align text-xs font-medium px-3 top-1.5 bottom-1.5 right-3 bg-indigo-600 text-white rounded-full"
                 >
                   Upload
@@ -160,12 +182,29 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
           
           {/* Responsive image preview box */}
           <div className="border-2 border-dashed border-gray-300 p-6 rounded-md flex justify-center items-center mb-6 mx-auto w-full h-[200px] sm:w-[350px]">
+            {imagePreview && !imageError ? (
+            <img 
+              src={imagePreview} 
+              alt="Preview" 
+              className="max-h-full max-w-full object-contain"
+              onError={() => setImageError(true)}
+              />
+            ):(
             <div className="text-center">
-              <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p className="mt-1 text-sm text-gray-500">image preview!</p>
-            </div>
+              {imageError ? (
+                <>
+                  <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="mt-1 text-sm text-gray-500">image is not valid!</p>
+                </>) : (
+                <> 
+                  <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="mt-1 text-sm text-gray-500">image preview!</p>
+                </>)}
+            </div>)}
           </div>
           
           <div className="flex justify-center sm:justify-start">
