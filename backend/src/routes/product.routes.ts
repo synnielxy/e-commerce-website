@@ -19,6 +19,7 @@ router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 
 // Admin-only routes
+// create a new product
 router.post(
   "/",
   authenticateToken,
@@ -26,6 +27,7 @@ router.post(
   createProduct
 );
 
+// fetch a product by ID
 router.put(
   "/:id",
   authenticateToken,

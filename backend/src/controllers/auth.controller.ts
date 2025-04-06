@@ -97,7 +97,7 @@ export const login = async (req: Request, res: Response) => {
     return res.status(201).json({
       message: "Login successful",
       user: mapUserToDTO(user),
-      token: req.cookies.jwt,
+      token: req.cookies.token,
     });
   } catch (error: any) {
     return res.status(500).json({

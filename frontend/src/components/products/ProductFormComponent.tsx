@@ -1,7 +1,7 @@
-// In /frontend/src/components/products/ProductFormComponent.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 
 interface ProductFormProps {
   productId?: string;
@@ -31,18 +31,39 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
     }
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log('Product data:', data);
-    
-    if (isEditMode) {
-      console.log(`Updating product with ID: ${productId}`);
-      // update logic
-    } else {
-      console.log('Creating new product');
-      // create logic
+  const onSubmit = async (data: FormValues) => {
+    try {
+      console.log('Product data:', data);
+      
+      const productData = {
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        imageUrl: data.imageUrl,
+        price: parseFloat(data.price),
+        quantity: parseInt(data.quantity)
+      };
+      
+      if (isEditMode && productId) {
+        console.log(`Updating product with ID: ${productId}`);
+        await axios.put(`http://localhost:3000/api/products/${productId}`, productData, {
+          withCredentials: true
+      });
+      } else {
+        console.log('Creating new product');
+        const response = await axios.post('http://localhost:3000/api/products', productData, {
+          withCredentials: true
+        });
+        
+        console.log('Product created successfully:', response.data);
+      }
+      navigate('/products');
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Failed to save product. Please try again.');
     }
-    navigate('/products');
   };
+
 
   // reusable css format for form labels and input boxes
   const labelFormat = "block text-base font-medium mb-2 px-1 text-[#6B7280]"
