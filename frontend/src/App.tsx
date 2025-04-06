@@ -20,6 +20,7 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 // import UserManagementPage from "./pages/admin/UserManagementPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductForm from "./pages/ProductForm";
+import ProductManagement from './pages/ProductForm'
 import { useContext } from "react";
 import AdminRoute from "./components/auth/AdminRoute";
 
@@ -58,7 +59,7 @@ function AppRoutes() {
         path="/products/create"
         element={
           <AdminRoute>
-            <ProductForm />
+            <ProductManagement />
           </AdminRoute>
         }
       />
@@ -66,7 +67,7 @@ function AppRoutes() {
         path="/products/edit/:productId"
         element={
           <AdminRoute>
-            <ProductForm />
+            <ProductManagement/>
           </AdminRoute>
         }
       />

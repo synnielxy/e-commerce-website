@@ -119,9 +119,13 @@ const ProductsPage = () => {
                 <button className="text-xs text-blue-600 hover:text-blue-700 transition">
                   Add
                 </button>
-                <button className="text-xs text-gray-600 hover:text-gray-700 transition">
+                {/* weize-sun changed: change the button to link*/}
+                <Link 
+                  to={`/products/edit/${product.id}`} 
+                  className="text-xs text-gray-600 hover:text-gray-700 transition"
+                >
                   Edit
-                </button>
+                </Link>
               </div>
             </div>
           </div>
