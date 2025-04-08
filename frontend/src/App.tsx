@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthContext, AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import Layout from "./components/layout/Layout";
 
 // Pages
@@ -20,7 +21,7 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 // import UserManagementPage from "./pages/admin/UserManagementPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductForm from "./pages/ProductForm";
-import ProductManagement from './pages/ProductForm'
+import ProductManagement from "./pages/ProductForm";
 import { useContext } from "react";
 import AdminRoute from "./components/auth/AdminRoute";
 
@@ -67,7 +68,7 @@ function AppRoutes() {
         path="/products/edit/:productId"
         element={
           <AdminRoute>
-            <ProductManagement/>
+            <ProductManagement />
           </AdminRoute>
         }
       />
@@ -83,11 +84,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router>
-          <Layout>
-            <AppRoutes />
-          </Layout>
-        </Router>
+        <CartProvider>
+          <Router>
+            <Layout>
+              <AppRoutes />
+            </Layout>
+          </Router>
+        </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
