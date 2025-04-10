@@ -2,60 +2,105 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  inCart: boolean;
+  quantity: number;
+}
+
 const ProductsPage = () => {
   const [sortOption, setSortOption] = useState('last-added');
-
-  // 静态产品数据
-  const products = [
+  const [products, setProducts] = useState<Product[]>([
     {
       id: 1,
       name: "Apple iPhone 11, 128G",
       price: 499.00,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 2,
       name: "Apple Watch Series 7",
       price: 399.00,
-      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 3,
       name: "AirPods Pro",
       price: 249.00,
-      image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 4,
       name: "MacBook Air M1",
       price: 999.00,
-      image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 5,
       name: "iPad Pro 12.9",
       price: 799.00,
-      image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 6,
       name: "iMac 24-inch",
       price: 1299.00,
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 7,
       name: "AirPods Max",
       price: 549.00,
-      image: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     },
     {
       id: 8,
       name: "Mac Pro",
       price: 5999.00,
-      image: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60"
+      image: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
+      inCart: false,
+      quantity: 0
     }
-  ];
+  ]);
+
+  const handleAddToCart = (productId: number) => {
+    setProducts(products.map(product => 
+      product.id === productId 
+        ? { ...product, inCart: true, quantity: 1 }
+        : product
+    ));
+  };
+
+  const handleUpdateQuantity = (productId: number, change: number) => {
+    setProducts(products.map(product => {
+      if (product.id === productId) {
+        const newQuantity = Math.max(0, product.quantity + change);
+        return {
+          ...product,
+          quantity: newQuantity,
+          inCart: newQuantity > 0
+        };
+      }
+      return product;
+    }));
+  };
 
   return (
     <div className="container mx-auto px-4 md:px-[64px] py-8 max-w-[1440px]">
@@ -89,36 +134,49 @@ const ProductsPage = () => {
       </div>
 
       {/* 产品网格 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg border">
-            <Link to={`/products/${product.id}`} className="block">
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="text-sm text-gray-900">{product.name}</h3>
-                <p className="text-sm font-medium text-gray-900 mt-1">${product.price.toFixed(2)}</p>
-              </div>
-            </Link>
-            <div className="px-3 pb-3 flex items-center justify-between">
-              <div className="flex items-center space-x-1">
-                <button className="p-1 hover:bg-gray-100 rounded transition">
-                  <Minus className="w-3 h-3" />
-                </button>
-                <span className="text-xs w-4 text-center">2</span>
-                <button className="p-1 hover:bg-gray-100 rounded transition">
-                  <Plus className="w-3 h-3" />
-                </button>
-              </div>
-              <div className="flex space-x-2">
-                <button className="text-xs text-blue-600 hover:text-blue-700 transition">
-                  Add
-                </button>
+      <div className="bg-white rounded-sm px-4 py-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {products.map((product) => (
+            <div key={product.id} className="bg-white rounded border p-2">
+              <Link to={`/products/${product.id}`} className="block">
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="">
+                  <h3 className="text-sm text-gray-900">{product.name}</h3>
+                  <p className="text-sm font-medium text-gray-900 mt-1">${product.price.toFixed(2)}</p>
+                </div>
+              </Link>
+              <div className="flex items-center justify-between">
+                <div className="flex space-x-1 w-full">
+                  {product.inCart ? (
+                    <div className="flex-1 flex items-center bg-[#4F46E5] rounded">
+                      <button 
+                        onClick={() => handleUpdateQuantity(product.id, -1)}
+                        className="px-3 py-0.5 text-xs text-white hover:bg-[#4338CA] rounded-l transition"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="flex-1 text-center text-xs text-white">{product.quantity}</span>
+                      <button 
+                        onClick={() => handleUpdateQuantity(product.id, 1)}
+                        className="px-3 py-0.5 text-xs text-white hover:bg-[#4338CA] rounded-r transition"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => handleAddToCart(product.id)}
+                      className="flex-1 text-xs text-white bg-[#4F46E5] hover:bg-[#4338CA] py-0.5 rounded transition"
+                    >
+                      Add
+                    </button>
+                    )}
                 {/* weize-sun changed: change the button to link*/}
                 <Link 
                   to={`/products/edit/${product.id}`} 
@@ -126,10 +184,11 @@ const ProductsPage = () => {
                 >
                   Edit
                 </Link>
+                </div> 
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* 分页 */}
