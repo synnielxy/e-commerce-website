@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Minus, Plus } from 'lucide-react';
 
 interface Product {
   id: number;
@@ -133,7 +133,7 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      {/* 产品网格 */}
+      {/* Products */}
       <div className="bg-white rounded-sm px-4 py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {products.map((product) => (
@@ -146,67 +146,82 @@ const ProductsPage = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="">
-                  <h3 className="text-sm text-gray-900">{product.name}</h3>
-                  <p className="text-sm font-medium text-gray-900 mt-1">${product.price.toFixed(2)}</p>
+                <div className="pt-2 pb-1">
+                  <h3 className="text-sm text-gray-500 font-light">{product.name}</h3>
+                  <p className="text-base font-medium text-gray-900">${product.price.toFixed(2)}</p>
                 </div>
               </Link>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-1 w-full">
-                  {product.inCart ? (
-                    <div className="flex-1 flex items-center bg-[#4F46E5] rounded">
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, -1)}
-                        className="px-3 py-0.5 text-xs text-white hover:bg-[#4338CA] rounded-l transition"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="flex-1 text-center text-xs text-white">{product.quantity}</span>
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, 1)}
-                        className="px-3 py-0.5 text-xs text-white hover:bg-[#4338CA] rounded-r transition"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
+              <div className="flex items-center justify-between space-x-1 w-full">
+                {product.inCart ? (
+                  <div className="flex items-center justify-evenly py-1 flex-1 bg-[#4F46E5] rounded-sm">
                     <button 
-                      onClick={() => handleAddToCart(product.id)}
-                      className="flex-1 text-xs text-white bg-[#4F46E5] hover:bg-[#4338CA] py-0.5 rounded transition"
+                      onClick={() => handleUpdateQuantity(product.id, -1)}
+                      className="py-1 text-white hover:bg-[#4338CA] rounded-sm transition"
                     >
-                      Add
+                      <Minus className="w-3 h-3" />
                     </button>
-                    )}
+                    <span className="text-center text-[10px] text-white w-4">{product.quantity}</span>
+                    <button 
+                      onClick={() => handleUpdateQuantity(product.id, 1)}
+                      className="py-1 text-white hover:bg-[#4338CA] rounded-sm transition"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => handleAddToCart(product.id)}
+                    className="flex-1 py-1 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition"
+                  >
+                    Add
+                  </button>
+                  )}
                 {/* weize-sun changed: change the button to link*/}
                 <Link 
                   to={`/products/edit/${product.id}`} 
-                  className="text-xs text-gray-600 hover:text-gray-700 transition"
+                  className="flex-1 w-full"
                 >
-                  Edit
+                  <button className="w-full py-1 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm">
+                    Edit
+                  </button>
                 </Link>
-                </div> 
-              </div>
+              </div> 
             </div>
           ))}
         </div>
       </div>
 
-      {/* 分页 */}
-      <div className="mt-8 flex justify-center items-center space-x-4">
-        <button className="p-2 rounded-md hover:bg-gray-100 transition">
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div className="flex space-x-1">
-          <button className="px-3 py-1 rounded-md bg-blue-600 text-white">1</button>
-          <button className="px-3 py-1 rounded-md hover:bg-gray-100">2</button>
-          <button className="px-3 py-1 rounded-md hover:bg-gray-100">3</button>
-          <button className="px-3 py-1 rounded-md hover:bg-gray-100">4</button>
-          <button className="px-3 py-1 rounded-md hover:bg-gray-100">5</button>
-        </div>
-        <button className="p-2 rounded-md hover:bg-gray-100 transition">
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
+      {/* Pagination */}
+      <div className="mt-6 flex justify-end items-center space-x-1">
+  {/* 左箭头 */}
+  <button className="w-8 h-8 flex items-center justify-center border hover:bg-gray-100 transition rounded">
+    <ChevronsLeft className="w-3 h-3" />
+  </button>
+
+  {/* 页码按钮组 */}
+  <div className="flex">
+    <button className="w-8 h-8 flex items-center justify-center border bg-[#4F46E5] text-white rounded-l">
+      1
+    </button>
+    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
+      2
+    </button>
+    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
+      3
+    </button>
+    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
+      4
+    </button>
+    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100 rounded-r">
+      5
+    </button>
+  </div>
+
+  {/* 右箭头 */}
+  <button className="w-8 h-8 flex items-center justify-center border hover:bg-gray-100 transition rounded">
+    <ChevronsRight className="w-3 h-3" />
+  </button>
+</div>
     </div>
   );
 };
