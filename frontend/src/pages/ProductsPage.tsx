@@ -104,15 +104,15 @@ const ProductsPage = () => {
 
   return (
     <div className="container mx-auto px-4 md:px-[64px] py-8 max-w-[1440px]">
-      {/* 标题和操作栏 */}
+      {/* filter */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">Products</h1>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="relative">
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
-              className="appearance-none bg-white border rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="appearance-none bg-white border rounded px-5 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="last-added">Last added</option>
               <option value="price-low-high">Price: low to high</option>
@@ -126,7 +126,7 @@ const ProductsPage = () => {
           </div>
           <Link
             to="/products/create"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            className="bg-[#4F46E5] text-white font-semibold text-sm px-6 py-2 rounded hover:bg-blue-700 transition"
           >
             Add Product
           </Link>
@@ -192,36 +192,33 @@ const ProductsPage = () => {
       </div>
 
       {/* Pagination */}
-      <div className="mt-6 flex justify-end items-center space-x-1">
-  {/* 左箭头 */}
-  <button className="w-8 h-8 flex items-center justify-center border hover:bg-gray-100 transition rounded">
-    <ChevronsLeft className="w-3 h-3" />
-  </button>
+      <div className="mt-6 flex justify-end items-center font-light">
+        <button className="w-9 h-9 flex items-center justify-center border hover:bg-gray-100 transition rounded-l">
+          <ChevronsLeft className="w-3 h-3" />
+        </button>
 
-  {/* 页码按钮组 */}
-  <div className="flex">
-    <button className="w-8 h-8 flex items-center justify-center border bg-[#4F46E5] text-white rounded-l">
-      1
-    </button>
-    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
-      2
-    </button>
-    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
-      3
-    </button>
-    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100">
-      4
-    </button>
-    <button className="-ml-px w-8 h-8 flex items-center justify-center border hover:bg-gray-100 rounded-r">
-      5
-    </button>
-  </div>
+        <div>
+          <button className="-ml-px w-9 h-9 border bg-[#4F46E5] text-white">
+            1
+          </button>
+          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
+            2
+          </button>
+          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
+            3
+          </button>
+          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
+            4
+          </button>
+          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
+            5
+          </button>
+        </div>
 
-  {/* 右箭头 */}
-  <button className="w-8 h-8 flex items-center justify-center border hover:bg-gray-100 transition rounded">
-    <ChevronsRight className="w-3 h-3" />
-  </button>
-</div>
+        <button className="-ml-px w-9 h-9 flex items-center justify-center border hover:bg-gray-100 transition rounded-r">
+          <ChevronsRight className="w-3 h-3" />
+        </button>
+      </div>
     </div>
   );
 };
