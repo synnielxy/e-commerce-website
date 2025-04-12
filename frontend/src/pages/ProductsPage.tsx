@@ -1,24 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight, Minus, Plus } from 'lucide-react';
+import ProductService from "@/services/product.service";
 
 interface Product {
   id: number;
   name: string;
   price: number;
-  image: string;
+  imageUrl: string;
   inCart: boolean;
   quantity: number;
 }
 
 const ProductsPage = () => {
   const [sortOption, setSortOption] = useState('last-added');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([
     {
       id: 1,
       name: "Apple iPhone 11, 128G",
       price: 499.00,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -26,7 +29,7 @@ const ProductsPage = () => {
       id: 2,
       name: "Apple Watch Series 7",
       price: 399.00,
-      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -34,7 +37,7 @@ const ProductsPage = () => {
       id: 3,
       name: "AirPods Pro",
       price: 249.00,
-      image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -42,7 +45,7 @@ const ProductsPage = () => {
       id: 4,
       name: "MacBook Air M1",
       price: 999.00,
-      image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -50,7 +53,7 @@ const ProductsPage = () => {
       id: 5,
       name: "iPad Pro 12.9",
       price: 799.00,
-      image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -58,7 +61,7 @@ const ProductsPage = () => {
       id: 6,
       name: "iMac 24-inch",
       price: 1299.00,
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -66,7 +69,7 @@ const ProductsPage = () => {
       id: 7,
       name: "AirPods Max",
       price: 549.00,
-      image: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -74,11 +77,31 @@ const ProductsPage = () => {
       id: 8,
       name: "Mac Pro",
       price: 5999.00,
-      image: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
       inCart: false,
       quantity: 0
     }
   ]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await ProductService.getProducts();
+        console.log(data)
+        setProducts(data.products);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch products');
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+
 
   const handleAddToCart = (productId: number) => {
     setProducts(products.map(product => 
@@ -101,6 +124,14 @@ const ProductsPage = () => {
       return product;
     }));
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-64 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 md:px-[64px] py-8 max-w-[1440px]">
@@ -141,7 +172,7 @@ const ProductsPage = () => {
               <Link to={`/products/${product.id}`} className="block">
                 <div className="aspect-square overflow-hidden">
                   <img
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -160,7 +191,7 @@ const ProductsPage = () => {
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="text-center text-[10px] text-white w-4">{product.quantity}</span>
+                    <span className="text-center text-[10px] text-white w-4">{product.stock}</span>
                     <button 
                       onClick={() => handleUpdateQuantity(product.id, 1)}
                       className="py-1 text-white hover:bg-[#4338CA] rounded-sm transition"
