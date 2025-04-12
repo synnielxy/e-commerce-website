@@ -187,26 +187,28 @@ const ProductsPage = () => {
               </Link>
               <div className="flex items-center justify-between space-x-1 w-full">
                 {product.inCart ? (
-                  <div className="flex items-center justify-evenly flex-1 bg-[#4F46E5] h-6 rounded-sm">
-                    <button 
-                      onClick={() => handleUpdateQuantity(product.id, -1)}
-                      className="text-white hover:bg-[#4338CA] rounded-sm transition"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-center text-[10px] text-white w-4">{product.quantity}</span>
-                    <button 
-                      onClick={() => handleUpdateQuantity(product.id, 1)}
-                      className="text-white hover:bg-[#4338CA] rounded-sm transition"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between bg-[#4F46E5] h-6 rounded-sm px-2">
+                      <button 
+                        onClick={() => handleUpdateQuantity(product.id, -1)}
+                        className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="text-center text-[10px] text-white">{product.quantity}</span>
+                      <button 
+                        onClick={() => handleUpdateQuantity(product.id, 1)}
+                        className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex-1">
                     <button 
                       onClick={() => handleAddToCart(product.id)}
-                      className="w-full h-6 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition"
+                      className="w-full h-6 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition flex items-center justify-center"
                     >
                       Add
                     </button>
@@ -217,7 +219,7 @@ const ProductsPage = () => {
                     to={`/products/edit/${product.id}`} 
                     className="block w-full"
                   >
-                    <button className="w-full h-6 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm">
+                    <button className="w-full h-6 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm flex items-center justify-center">
                       Edit
                     </button>
                   </Link>
