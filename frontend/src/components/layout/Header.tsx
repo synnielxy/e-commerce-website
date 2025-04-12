@@ -6,7 +6,11 @@ import CartOverlay from "../cart/CartOverlay";
 import { CartService } from "../../services/cart.service";
 import { CartContext } from "../../contexts/CartContext";
 
-const Header = () => {
+interface HeaderProps {
+  className?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
   const { cart } = useContext(CartContext);
   const navigate = useNavigate();
@@ -24,7 +28,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px]">
+      <header className={`w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px] ${className}`}>
         {/* Desktop Layout */}
         <div className="hidden md:flex md:items-center md:justify-between w-full h-full">
           <div className="flex items-center flex-1 min-w-0">
