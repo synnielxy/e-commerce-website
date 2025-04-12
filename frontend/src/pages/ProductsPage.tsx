@@ -14,6 +14,8 @@ interface Product {
 
 const ProductsPage = () => {
   const [sortOption, setSortOption] = useState('last-added');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([
@@ -53,7 +55,7 @@ const ProductsPage = () => {
       id: 5,
       name: "iPad Pro 12.9",
       price: 799.00,
-      imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60",
+      imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=forfit=crop&q=60",
       inCart: false,
       quantity: 0
     },
@@ -90,6 +92,7 @@ const ProductsPage = () => {
         const data = await ProductService.getProducts();
         console.log(data)
         setProducts(data.products);
+        setPages(data.pagination.pages);
         setError(null);
       } catch (err) {
         setError('Failed to fetch products');
@@ -99,7 +102,7 @@ const ProductsPage = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [currentPage]);
 
 
 
@@ -172,50 +175,53 @@ const ProductsPage = () => {
               <Link to={`/products/${product.id}`} className="block">
                 <div className="aspect-square overflow-hidden">
                   <img
-                    src={product.imageUrl}
-                    alt={product.name}
+                    src={product.imageUrl || '/no-image.svg'}
+                    alt={product.name || "No image"}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="pt-2 pb-1">
-                  <h3 className="text-sm text-gray-500 font-light">{product.name}</h3>
+                  <h3 className="text-sm text-gray-500 font-light min-h-[40px] line-clamp-2">{product.name}</h3>
                   <p className="text-base font-medium text-gray-900">${product.price.toFixed(2)}</p>
                 </div>
               </Link>
               <div className="flex items-center justify-between space-x-1 w-full">
                 {product.inCart ? (
-                  <div className="flex items-center justify-evenly py-1 flex-1 bg-[#4F46E5] rounded-sm">
+                  <div className="flex items-center justify-evenly flex-1 bg-[#4F46E5] h-6 rounded-sm">
                     <button 
                       onClick={() => handleUpdateQuantity(product.id, -1)}
-                      className="py-1 text-white hover:bg-[#4338CA] rounded-sm transition"
+                      className="text-white hover:bg-[#4338CA] rounded-sm transition"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="text-center text-[10px] text-white w-4">{product.stock}</span>
+                    <span className="text-center text-[10px] text-white w-4">{product.quantity}</span>
                     <button 
                       onClick={() => handleUpdateQuantity(product.id, 1)}
-                      className="py-1 text-white hover:bg-[#4338CA] rounded-sm transition"
+                      className="text-white hover:bg-[#4338CA] rounded-sm transition"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                   </div>
                 ) : (
-                  <button 
-                    onClick={() => handleAddToCart(product.id)}
-                    className="flex-1 py-1 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition"
+                  <div className="flex-1">
+                    <button 
+                      onClick={() => handleAddToCart(product.id)}
+                      className="w-full h-6 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition"
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Link 
+                    to={`/products/edit/${product.id}`} 
+                    className="block w-full"
                   >
-                    Add
-                  </button>
-                  )}
-                {/* weize-sun changed: change the button to link*/}
-                <Link 
-                  to={`/products/edit/${product.id}`} 
-                  className="flex-1 w-full"
-                >
-                  <button className="w-full py-1 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm">
-                    Edit
-                  </button>
-                </Link>
+                    <button className="w-full h-6 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm">
+                      Edit
+                    </button>
+                  </Link>
+                </div>
               </div> 
             </div>
           ))}
@@ -229,21 +235,21 @@ const ProductsPage = () => {
         </button>
 
         <div>
-          <button className="-ml-px w-9 h-9 border bg-[#4F46E5] text-white">
-            1
-          </button>
-          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
-            2
-          </button>
-          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
-            3
-          </button>
-          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
-            4
-          </button>
-          <button className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
-            5
-          </button>
+          {Array.from({ length: pages }, (_, i) => i + 1).map((page, index) => {
+            if (page === currentPage) {
+              return (
+                <button key={index} className="-ml-px w-9 h-9 border bg-[#4F46E5] text-white">
+                  {page}
+                </button>
+              )
+            } else {
+              return (
+                <button key={index}  onClick={() => setCurrentPage(page)} className="-ml-px w-9 h-9 border hover:bg-gray-100 text-[#4F46E5]">
+                  {page}
+                </button>
+              )
+            }
+          })}
         </div>
 
         <button className="-ml-px w-9 h-9 flex items-center justify-center border hover:bg-gray-100 transition rounded-r">
