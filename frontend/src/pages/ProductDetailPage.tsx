@@ -1,32 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import ProductService from '@/services/product.service';
 import { Minus, Plus, Heart } from 'lucide-react';
 
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
+}
+
 const ProductDetailPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  
-  // 静态产品数据
-  const product = {
-    id: 1,
-    name: "Classic Comfort Desk Chair",
-    price: 199.99,
-    originalPrice: 249.99,
-    description: "Experience ultimate comfort with our ergonomic desk chair. Perfect for long working hours, featuring adjustable height, lumbar support, and premium cushioning.",
-    rating: 4.5,
-    reviews: 128,
-    stock: 10,
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
-    ],
-    features: [
-      "Ergonomic Design",
-      "Adjustable Height",
-      "360° Swivel",
-      "Breathable Mesh Back",
-      "Premium Cushioning"
-    ]
-  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await ProductService.getProductById(id!);
+        console.log(data);
+        setProduct({
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          price: Number(data.price),
+          imageUrl: data.imageUrl ?? "/no-image.png",
+          stock: data.stock
+        });
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch product');
+        console.error('Error fetching product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-64 text-red-500">{error}</div>;
+  }
+
+  if (!product) {
+    return <div className="flex justify-center items-center h-64">Product not found</div>;
+  }
 
   const handleQuantityChange = (type: 'increase' | 'decrease') => {
     if (type === 'increase' && quantity < product.stock) {
@@ -43,21 +74,10 @@ const ProductDetailPage = () => {
         <div className="md:w-1/2">
           <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
             <img
-              src={product.images[0]}
+              src={product.imageUrl}
               alt={product.name}
               className="w-full h-full object-cover"
             />
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            {product.images.map((image, index) => (
-              <div key={index} className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={image}
-                  alt={`${product.name} ${index + 1}`}
-                  className="w-full h-full object-cover cursor-pointer hover:opacity-75 transition"
-                />
-              </div>
-            ))}
           </div>
         </div>
 
@@ -67,15 +87,11 @@ const ProductDetailPage = () => {
           
           {/* 价格信息 */}
           <div className="mt-4 flex items-center">
-            <p className="text-2xl font-semibold text-gray-900">${product.price}</p>
-            <p className="ml-3 text-lg text-gray-500 line-through">${product.originalPrice}</p>
-            <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-red-100 text-red-800">
-              Save {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-            </span>
+            <p className="text-2xl font-semibold text-gray-900">${product.price.toFixed(2)}</p>
           </div>
 
           {/* 评分和评论 */}
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <div className="flex items-center">
               <div className="flex items-center">
                 {[...Array(5)].map((_, index) => (
@@ -97,7 +113,7 @@ const ProductDetailPage = () => {
                 {product.rating} ({product.reviews} reviews)
               </p>
             </div>
-          </div>
+          </div> */}
 
           {/* 描述 */}
           <div className="mt-4">
@@ -105,7 +121,7 @@ const ProductDetailPage = () => {
           </div>
 
           {/* 特点列表 */}
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <h3 className="text-sm font-medium text-gray-900">Features</h3>
             <ul className="mt-2 space-y-2">
               {product.features.map((feature, index) => (
@@ -117,7 +133,7 @@ const ProductDetailPage = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* 数量选择器和添加到购物车 */}
           <div className="mt-8">

@@ -13,7 +13,7 @@ interface GetProductsParams {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
-  sort?: 'last-added' | 'price-asc' | 'price-desc';
+  sort?: string;
 }
 
 export const ProductService = {
