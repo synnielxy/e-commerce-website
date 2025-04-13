@@ -6,16 +6,19 @@ import {
   UpdateProductData,
 } from "../types/product.types";
 
+interface GetProductsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: 'last-added' | 'price-asc' | 'price-desc';
+}
+
 export const ProductService = {
   async getProducts(
-    params: {
-      page?: number;
-      limit?: number;
-      search?: string;
-      category?: string;
-      minPrice?: number;
-      maxPrice?: number;
-    } = {}
+    params: GetProductsParams = {}
   ): Promise<ProductsResponse> {
     const response = await api.get("/products", { params });
     return response.data;

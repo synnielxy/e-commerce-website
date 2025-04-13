@@ -4,7 +4,7 @@ import { ChevronsLeft, ChevronsRight, Minus, Plus } from 'lucide-react';
 import ProductService from "@/services/product.service";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   imageUrl: string;
@@ -19,79 +19,89 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Apple iPhone 11, 128G",
-      price: 499.00,
-      imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 2,
-      name: "Apple Watch Series 7",
-      price: 399.00,
-      imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 3,
-      name: "AirPods Pro",
-      price: 249.00,
-      imageUrl: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 4,
-      name: "MacBook Air M1",
-      price: 999.00,
-      imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 5,
-      name: "iPad Pro 12.9",
-      price: 799.00,
-      imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=forfit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 6,
-      name: "iMac 24-inch",
-      price: 1299.00,
-      imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 7,
-      name: "AirPods Max",
-      price: 549.00,
-      imageUrl: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    },
-    {
-      id: 8,
-      name: "Mac Pro",
-      price: 5999.00,
-      imageUrl: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
-      inCart: false,
-      quantity: 0
-    }
+    // {
+    //   id: 1,
+    //   name: "Apple iPhone 11, 128G",
+    //   price: 499.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: 2,
+    //   name: "Apple Watch Series 7",
+    //   price: 399.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: 3,
+    //   name: "AirPods Pro",
+    //   price: 249.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: 4,
+    //   name: "MacBook Air M1",
+    //   price: 999.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: 5,
+    //   name: "iPad Pro 12.9",
+    //   price: 799.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=forfit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: "6",
+    //   name: "iMac 24-inch",
+    //   price: 1299.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: "7",
+    //   name: "AirPods Max",
+    //   price: 549.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // },
+    // {
+    //   id: "8",
+    //   name: "Mac Pro",
+    //   price: 5999.00,
+    //   imageUrl: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
+    //   inCart: false,
+    //   quantity: 0
+    // }
   ]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await ProductService.getProducts();
-        console.log(data)
-        setProducts(data.products);
+        const data = await ProductService.getProducts({
+          sort: sortOption
+        });
+        setProducts(
+          data.products.map((p) => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price),
+            imageUrl: p.imageUrl ?? "/no-image.png",
+            inCart: false,
+            quantity: 0,
+          }))
+        );
         setPages(data.pagination.pages);
         setError(null);
       } catch (err) {
@@ -102,11 +112,11 @@ const ProductsPage = () => {
       }
     };
     fetchProducts();
-  }, [currentPage]);
+  }, [currentPage, sortOption]);
 
 
 
-  const handleAddToCart = (productId: number) => {
+  const handleAddToCart = (productId: string) => {
     setProducts(products.map(product => 
       product.id === productId 
         ? { ...product, inCart: true, quantity: 1 }
@@ -114,7 +124,7 @@ const ProductsPage = () => {
     ));
   };
 
-  const handleUpdateQuantity = (productId: number, change: number) => {
+  const handleUpdateQuantity = (productId: string, change: number) => {
     setProducts(products.map(product => {
       if (product.id === productId) {
         const newQuantity = Math.max(0, product.quantity + change);
@@ -149,8 +159,8 @@ const ProductsPage = () => {
               className="appearance-none bg-white border rounded px-5 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="last-added">Last added</option>
-              <option value="price-low-high">Price: low to high</option>
-              <option value="price-high-low">Price: high to low</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
