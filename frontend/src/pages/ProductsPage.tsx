@@ -149,8 +149,8 @@ const ProductsPage = () => {
   return (
     <div className="container mx-auto px-4 md:px-[64px] py-8 max-w-[1440px]">
       {/* filter */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">Products</h1>
+      <div className="flex justify-center md:justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-center md:text-left">Products</h1>
         <div className="flex items-center gap-2">
           <div className="relative">
             <select
