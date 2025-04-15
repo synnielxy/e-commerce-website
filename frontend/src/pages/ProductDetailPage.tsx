@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductService from '@/services/product.service';
+import CartService from '@/services/cart.service';
 import { Minus, Plus, Heart } from 'lucide-react';
 
 interface Product {
@@ -62,22 +63,37 @@ const ProductDetailPage = () => {
     return <div className="flex justify-center items-center h-64">Product not found</div>;
   }
 
-  const handleAddToCart = () => {
-    setInCart(true);
-    setQuantity(1);
+  const handleAddToCart = async () => {
+    try {
+      if (!product) return;
+      await CartService.addToCart(product.id, 1);
+      setInCart(true);
+      setQuantity(1);
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+    }
   };
 
-  const handleQuantityChange = (type: 'increase' | 'decrease') => {
-    if (type === 'increase' && quantity < (product?.stock || 0)) {
-      setQuantity(prev => prev + 1);
-    } else if (type === 'decrease' && quantity > 0) {
-      setQuantity(prev => {
-        const newQuantity = prev - 1;
+  const handleQuantityChange = async (type: 'increase' | 'decrease') => {
+    try {
+      if (!product) return;
+
+      const newQuantity = type === 'increase' ? quantity + 1 : quantity - 1;
+
+      if (type === 'increase' && newQuantity <= product.stock) {
+        await CartService.updateCartItem(product.id, newQuantity);
+        setQuantity(newQuantity);
+      } else if (type === 'decrease' && newQuantity >= 0) {
         if (newQuantity === 0) {
+          await CartService.removeFromCart(product.id);
           setInCart(false);
+        } else {
+          await CartService.updateCartItem(product.id, newQuantity);
         }
-        return newQuantity;
-      });
+        setQuantity(newQuantity);
+      }
+    } catch (err) {
+      console.error('Error updating cart:', err);
     }
   };
 

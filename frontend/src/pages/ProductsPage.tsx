@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight, Minus, Plus } from 'lucide-react';
 import ProductService from "@/services/product.service";
+import CartService from "@/services/cart.service";
 
 interface Product {
   id: string;
@@ -55,26 +56,45 @@ const ProductsPage = () => {
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 
-  const handleAddToCart = (productId: string) => {
-    setProducts(products.map(product => 
-      product.id === productId 
-        ? { ...product, inCart: true, quantity: 1 }
-        : product
-    ));
+  const handleAddToCart = async (productId: string) => {
+    try {
+      await CartService.addToCart(productId, 1);
+      setProducts(products.map(product => 
+        product.id === productId 
+          ? { ...product, inCart: true, quantity: 1 }
+          : product
+      ));
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+    }
   };
 
-  const handleUpdateQuantity = (productId: string, change: number) => {
-    setProducts(products.map(product => {
-      if (product.id === productId) {
-        const newQuantity = Math.max(0, product.quantity + change);
-        return {
-          ...product,
-          quantity: newQuantity,
-          inCart: newQuantity > 0
-        };
+  const handleUpdateQuantity = async (productId: string, change: number) => {
+    try {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const newQuantity = Math.max(0, product.quantity + change);
+      
+      if (newQuantity === 0) {
+        await CartService.removeFromCart(productId);
+      } else {
+        await CartService.updateCartItem(productId, newQuantity);
       }
-      return product;
-    }));
+
+      setProducts(products.map(product => {
+        if (product.id === productId) {
+          return {
+            ...product,
+            quantity: newQuantity,
+            inCart: newQuantity > 0
+          };
+        }
+        return product;
+      }));
+    } catch (err) {
+      console.error('Error updating cart:', err);
+    }
   };
 
   if (loading) {
