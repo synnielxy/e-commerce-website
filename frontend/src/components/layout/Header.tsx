@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Search, ShoppingCart, User, Star } from "lucide-react";
 import CartOverlay from "../cart/CartOverlay";
-import { CartService } from "../../services/cart.service";
 import { CartContext } from "../../contexts/CartContext";
 
 interface HeaderProps {
@@ -14,7 +13,6 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
   const { cart } = useContext(CartContext);
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -87,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               <div className="relative">
                 <ShoppingCart className="w-6 h-6" />
                 <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                  2
+                  {cart?.totalItems || 0}
                 </span>
               </div>
               <span className="ml-3 text-sm">
@@ -117,10 +115,10 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                 <div className="relative">
                   <ShoppingCart className="w-5 h-5" />
                   <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                    2
+                    {cart?.totalItems || 0}
                   </span>
                 </div>
-                <span className="text-xs">$0.00</span>
+                <span className="text-xs">${cart?.totalPrice?.toFixed(2) || "0.00"}</span>
               </div>
             </div>
           </div>
