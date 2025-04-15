@@ -52,16 +52,6 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     }
   };
 
-  const handleRemoveItem = async (productId: string) => {
-    try {
-      await CartService.removeFromCart(productId);
-      const updatedCart = await CartService.getCart();
-      setCart(updatedCart);
-    } catch (error) {
-      console.error("Error removing item from cart:", error);
-    }
-  };
-
   return (
     <>
       {/* Backdrop for mobile and desktop */}
