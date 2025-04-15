@@ -54,14 +54,14 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
 
   return (
     <>
-      {/* Backdrop for mobile */}
-      <div
+      {/* Backdrop for mobile and desktop */}
+      {/* <div
         className={`
-          md:hidden fixed inset-0 bg-black transition-opacity duration-300
+          fixed inset-0 bg-black transition-opacity duration-300
           ${isOpen ? "opacity-50 z-40" : "opacity-0 -z-10"}
         `}
         onClick={onClose}
-      />
+      /> */}
 
       {/* Cart Overlay */}
       <div
