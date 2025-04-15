@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Search, ShoppingCart, User, Star } from "lucide-react";
 import CartOverlay from "../cart/CartOverlay";
-import { CartService } from "../../services/cart.service";
 import { CartContext } from "../../contexts/CartContext";
 
 interface HeaderProps {
@@ -14,7 +13,6 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
   const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -37,8 +35,10 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           <div className="flex items-center flex-1 min-w-0">
             {/* Logo */}
             <div className="flex space-x-2 shrink-0">
-              <h1 className="text-2xl font-bold">Management</h1>
-              <span className="text-[9px] pt-4">Chuwa</span>
+              <Link to="/products" className="flex space-x-2 shrink-0">
+                <h1 className="text-2xl font-bold">Management</h1>
+                <span className="text-[9px] pt-4">Chuwa</span>
+              </Link>
             </div>
 
             {/* Search Bar - Desktop */}

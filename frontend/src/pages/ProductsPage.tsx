@@ -10,8 +10,6 @@ interface Product {
   name: string;
   price: number;
   imageUrl: string;
-  inCart: boolean;
-  quantity: number;
 }
 
 const ProductsPage = () => {
@@ -31,14 +29,13 @@ const ProductsPage = () => {
           sort: sortOption,
           page: currentPage,
         });
+
         setProducts(
           data.products.map((p) => ({
             id: p.id,
             name: p.name,
             price: Number(p.price),
             imageUrl: p.imageUrl ?? "/no-image.png",
-            inCart: false,
-            quantity: 0,
           }))
         );
         setPages(data.pagination.pages);
@@ -50,8 +47,9 @@ const ProductsPage = () => {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, [currentPage, sortOption]);
+  }, [currentPage, sortOption]); // Remove cart dependency since we don't need it anymore
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(e.target.value);

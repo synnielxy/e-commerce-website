@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProductService from "@/services/product.service";
+import ProductQuantity from "@/components/products/ProductQuantity";
 import CartService from "@/services/cart.service";
 import { Minus, Plus, Heart } from "lucide-react";
 import { CartContext } from "../contexts/CartContext";
@@ -158,6 +159,7 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Add to cart */}
+            
             <div className="mt-8 flex items-center justify-evenly gap-2">
               {inCart ? (
                 <div className="w-[120px]">
