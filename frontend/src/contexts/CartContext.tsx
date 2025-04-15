@@ -35,7 +35,7 @@ interface Cart {
 // Define context type
 interface CartContextType {
   cart: Cart | null;
-  setCart: (cart: Cart) => void;
+  setCart: (cart: Cart | null) => void;
 }
 
 // Create the context with default values

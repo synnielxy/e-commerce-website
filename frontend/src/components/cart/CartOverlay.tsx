@@ -42,6 +42,16 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     }
   };
 
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      await CartService.removeFromCart(productId);
+      const updatedCart = await CartService.getCart();
+      setCart(updatedCart);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
+
   return (
     <>
       {/* Backdrop for mobile */}
@@ -64,7 +74,9 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-xl font-semibold">Cart ({cart?.totalItems || 0})</h2>
+          <h2 className="text-xl font-semibold">
+            Cart ({cart?.totalItems || 0})
+          </h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full"
@@ -106,7 +118,10 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
               </div>
               <div className="text-right">
                 <p className="font-medium">${item.price.toFixed(2)}</p>
-                <button className="text-sm text-gray-500 hover:text-gray-700 mt-2">
+                <button
+                  className="text-sm text-gray-500 hover:text-gray-700 mt-2"
+                  onClick={() => handleRemoveItem(item.product._id)}
+                >
                   Remove
                 </button>
               </div>
@@ -148,7 +163,7 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
           </div>
           <div className="flex justify-between font-semibold pt-2 border-t">
             <span>Estimated total</span>
-            <span>${(cart?.totalPrice  ?? 0 ) .toFixed(2)}</span>
+            <span>${(cart?.totalPrice ?? 0).toFixed(2)}</span>
           </div>
         </div>
 

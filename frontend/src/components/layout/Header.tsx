@@ -10,15 +10,16 @@ interface HeaderProps {
   className?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ className = '' }) => {
+const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
-  const { cart } = useContext(CartContext);
+  const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
+    setCart(null);
     navigate("/login");
   };
 
@@ -28,7 +29,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
   return (
     <>
-      <header className={`w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px] ${className}`}>
+      <header
+        className={`w-full bg-[#111827] text-white py-2 px-4 md:px-[64px] md:py-[6px] md:h-[54px] ${className}`}
+      >
         {/* Desktop Layout */}
         <div className="hidden md:flex md:items-center md:justify-between w-full h-full">
           <div className="flex items-center flex-1 min-w-0">
@@ -56,7 +59,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             <div className="flex items-center space-x-3 cursor-pointer transition relative">
               <div className="relative">
                 <User className="w-6 h-6" />
-                <Star className="w-3 h-3 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+                {isAdmin && (
+                  <Star className="w-3 h-3 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+                )}
               </div>
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2">
@@ -80,20 +85,22 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               )}
             </div>
 
-            <div
-              className="relative flex items-center cursor-pointer hover:text-gray-300 transition"
-              onClick={toggleCart}
-            >
-              <div className="relative">
-                <ShoppingCart className="w-6 h-6" />
-                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                  2
+            {isAuthenticated && (
+              <div
+                className="relative flex items-center cursor-pointer hover:text-gray-300 transition"
+                onClick={toggleCart}
+              >
+                <div className="relative">
+                  <ShoppingCart className="w-6 h-6" />
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                    {cart?.totalItems}
+                  </span>
+                </div>
+                <span className="ml-3 text-sm">
+                  ${cart?.totalPrice?.toFixed(2) || "0.00"}
                 </span>
               </div>
-              <span className="ml-3 text-sm">
-                ${cart?.totalPrice?.toFixed(2) || "0.00"}
-              </span>
-            </div>
+            )}
           </div>
         </div>
 
@@ -111,17 +118,24 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             <div className="flex items-center space-x-7">
               <div className="relative">
                 <User className="w-5 h-5" />
-                <Star className="w-2.5 h-2.5 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+                {isAdmin && (
+                  <Star className="w-2.5 h-2.5 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+                )}
               </div>
-              <div className="flex items-center space-x-2" onClick={toggleCart}>
-                <div className="relative">
-                  <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                    2
-                  </span>
+              {isAuthenticated && (
+                <div
+                  className="flex items-center space-x-2"
+                  onClick={toggleCart}
+                >
+                  <div className="relative">
+                    <ShoppingCart className="w-5 h-5" />
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                      2
+                    </span>
+                  </div>
+                  <span className="text-xs">$0.00</span>
                 </div>
-                <span className="text-xs">$0.00</span>
-              </div>
+              )}
             </div>
           </div>
 
