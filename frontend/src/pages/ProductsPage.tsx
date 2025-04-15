@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronsLeft, ChevronsRight, Minus, Plus } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import ProductService from "@/services/product.service";
-import CartService from "@/services/cart.service";
+import { CartContext } from "../contexts/CartContext";
+import ProductQuantity from "@/components/ProductQuantity";
 
 interface Product {
   id: string;
   name: string;
   price: number;
   imageUrl: string;
-  inCart: boolean;
-  quantity: number;
 }
 
 const ProductsPage = () => {
@@ -29,14 +28,13 @@ const ProductsPage = () => {
           sort: sortOption,
           page: currentPage
         });
+
         setProducts(
           data.products.map((p) => ({
             id: p.id,
             name: p.name,
             price: Number(p.price),
             imageUrl: p.imageUrl ?? "/no-image.png",
-            inCart: false,
-            quantity: 0,
           }))
         );
         setPages(data.pagination.pages);
@@ -48,53 +46,13 @@ const ProductsPage = () => {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, [currentPage, sortOption]);
+  }, [currentPage, sortOption]); // Remove cart dependency since we don't need it anymore
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(e.target.value);
-    setCurrentPage(1); // Reset to first page when sorting changes
-  };
-
-  const handleAddToCart = async (productId: string) => {
-    try {
-      await CartService.addToCart(productId, 1);
-      setProducts(products.map(product => 
-        product.id === productId 
-          ? { ...product, inCart: true, quantity: 1 }
-          : product
-      ));
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-    }
-  };
-
-  const handleUpdateQuantity = async (productId: string, change: number) => {
-    try {
-      const product = products.find(p => p.id === productId);
-      if (!product) return;
-
-      const newQuantity = Math.max(0, product.quantity + change);
-      
-      if (newQuantity === 0) {
-        await CartService.removeFromCart(productId);
-      } else {
-        await CartService.updateCartItem(productId, newQuantity);
-      }
-
-      setProducts(products.map(product => {
-        if (product.id === productId) {
-          return {
-            ...product,
-            quantity: newQuantity,
-            inCart: newQuantity > 0
-          };
-        }
-        return product;
-      }));
-    } catch (err) {
-      console.error('Error updating cart:', err);
-    }
+    setCurrentPage(1);
   };
 
   if (loading) {
@@ -187,34 +145,7 @@ const ProductsPage = () => {
                 </div>
               </Link>
               <div className="flex items-center justify-between gap-6 md:gap-1 w-full">
-                {product.inCart ? (
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between bg-[#4F46E5] h-6 rounded-sm px-2">
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, -1)}
-                        className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="text-center text-[10px] text-white">{product.quantity}</span>
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, 1)}
-                        className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex-1">
-                    <button 
-                      onClick={() => handleAddToCart(product.id)}
-                      className="w-full h-6 text-[10px] text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition flex items-center justify-center"
-                    >
-                      Add
-                    </button>
-                  </div>
-                )}
+                <ProductQuantity productId={product.id} />
                 <div className="flex-1">
                   <Link 
                     to={`/products/edit/${product.id}`} 
