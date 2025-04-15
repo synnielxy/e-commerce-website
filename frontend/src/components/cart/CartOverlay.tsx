@@ -52,16 +52,26 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     }
   };
 
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      await CartService.removeFromCart(productId);
+      const updatedCart = await CartService.getCart();
+      setCart(updatedCart);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
+
   return (
     <>
-      {/* Backdrop for mobile */}
-      <div
+      {/* Backdrop for mobile and desktop */}
+      {/* <div
         className={`
-          md:hidden fixed inset-0 bg-black transition-opacity duration-300
+          fixed inset-0 bg-black transition-opacity duration-300
           ${isOpen ? "opacity-50 z-40" : "opacity-0 -z-10"}
         `}
         onClick={onClose}
-      />
+      /> */}
 
       {/* Cart Overlay */}
       <div
