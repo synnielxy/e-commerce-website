@@ -88,8 +88,34 @@ const ProductsPage = () => {
   return (
     <div className="container mx-auto px-4 md:px-[64px] pt-16 md:pt-10 pb-16 max-w-[1440px]">
       {/* Title and Actions */}
-      <div className="mb-4 md:mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-8">
         <h1 className="text-[24px] md:text-[30px] font-semibold text-center md:text-left">Products</h1>
+        
+        {/* Desktop Filter and Add */}
+        <div className="hidden md:flex items-center gap-4">
+          <div className="relative w-[200px]">
+            <select
+              value={sortOption}
+              onChange={handleSortChange}
+              className="w-full appearance-none bg-white border border-gray-200 rounded px-4 h-[42px] text-gray-600 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
+            >
+              <option value="last-added">Last added</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <Link
+            to="/products/create"
+            className="bg-[#4F46E5] text-white font-medium text-sm px-6 h-[42px] rounded hover:bg-[#4338CA] transition flex items-center justify-center"
+          >
+            Add Product
+          </Link>
+        </div>
       </div>
       
       {/* Mobile Filter and Add */}
@@ -120,32 +146,6 @@ const ProductsPage = () => {
             Add Product
           </Link>
         </div>
-      </div>
-
-      {/* Desktop Filter and Add */}
-      <div className="hidden md:flex items-center gap-4">
-        <div className="relative w-[200px]">
-          <select
-            value={sortOption}
-            onChange={handleSortChange}
-            className="w-full appearance-none bg-white border border-gray-200 rounded px-4 h-[42px] text-gray-600 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
-          >
-            <option value="last-added">Last added</option>
-            <option value="price-asc">Price: low to high</option>
-            <option value="price-desc">Price: high to low</option>
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-        <Link
-          to="/products/create"
-          className="bg-[#4F46E5] text-white font-medium text-sm px-6 h-[42px] rounded hover:bg-[#4338CA] transition flex items-center justify-center"
-        >
-          Add Product
-        </Link>
       </div>
 
       {/* Products Grid */}
