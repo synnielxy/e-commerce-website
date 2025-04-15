@@ -18,72 +18,7 @@ const ProductsPage = () => {
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [products, setProducts] = useState<Product[]>([
-    // {
-    //   id: 1,
-    //   name: "Apple iPhone 11, 128G",
-    //   price: 499.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: 2,
-    //   name: "Apple Watch Series 7",
-    //   price: 399.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: 3,
-    //   name: "AirPods Pro",
-    //   price: 249.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: 4,
-    //   name: "MacBook Air M1",
-    //   price: 999.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: 5,
-    //   name: "iPad Pro 12.9",
-    //   price: 799.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=forfit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: "6",
-    //   name: "iMac 24-inch",
-    //   price: 1299.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: "7",
-    //   name: "AirPods Max",
-    //   price: 549.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // },
-    // {
-    //   id: "8",
-    //   name: "Mac Pro",
-    //   price: 5999.00,
-    //   imageUrl: "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=800&auto=format&fit=crop&q=60",
-    //   inCart: false,
-    //   quantity: 0
-    // }
-  ]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
