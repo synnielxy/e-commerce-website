@@ -42,6 +42,16 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     }
   };
 
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      await CartService.removeFromCart(productId);
+      const updatedCart = await CartService.getCart();
+      setCart(updatedCart);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
+
   return (
     <>
       {/* Backdrop for mobile */}
@@ -106,7 +116,9 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
               </div>
               <div className="text-right">
                 <p className="font-medium">${item.price.toFixed(2)}</p>
-                <button className="text-sm text-gray-500 hover:text-gray-700 mt-2">
+                <button className="text-sm text-gray-500 hover:text-gray-700 mt-2"
+                  onClick={() => handleRemoveItem(item.product._id)}
+                >
                   Remove
                 </button>
               </div>
