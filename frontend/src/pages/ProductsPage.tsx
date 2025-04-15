@@ -25,7 +25,8 @@ const ProductsPage = () => {
       try {
         setLoading(true);
         const data = await ProductService.getProducts({
-          sort: sortOption
+          sort: sortOption,
+          page: currentPage
         });
         setProducts(
           data.products.map((p) => ({
@@ -49,7 +50,10 @@ const ProductsPage = () => {
     fetchProducts();
   }, [currentPage, sortOption]);
 
-
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(e.target.value);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
 
   const handleAddToCart = (productId: string) => {
     setProducts(products.map(product => 
@@ -94,12 +98,12 @@ const ProductsPage = () => {
           <div className="relative w-full">
             <select
               value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
+              onChange={handleSortChange}
               className="w-full appearance-none bg-white border border-gray-200 shadow-sm rounded px-3 h-[36px] text-gray-600 text-sm focus:outline-none"
             >
+              <option value="last-added">Last added</option>
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
-              <option value="last-added">Last added</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +127,7 @@ const ProductsPage = () => {
         <div className="relative w-[200px]">
           <select
             value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+            onChange={handleSortChange}
             className="w-full appearance-none bg-white border border-gray-200 rounded px-4 h-[42px] text-gray-600 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
           >
             <option value="last-added">Last added</option>

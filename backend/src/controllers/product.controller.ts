@@ -55,9 +55,26 @@ export const getAllProducts = async (req: Request, res: Response) => {
       query.price = { ...query.price, $lte: maxPrice };
     }
 
+    // Handle sorting
+    let sortOptions: any = { createdAt: -1 }; // Default sort by latest
+    const sort = req.query.sort as string;
+    
+    switch (sort) {
+      case 'price-asc':
+        sortOptions = { price: 1 };
+        break;
+      case 'price-desc':
+        sortOptions = { price: -1 };
+        break;
+      case 'last-added':
+      default:
+        sortOptions = { createdAt: -1 };
+        break;
+    }
+
     // Get products
     const products = await Product.find(query)
-      .sort({ createdAt: -1 })
+      .sort(sortOptions)
       .skip(skip)
       .limit(limit);
 
