@@ -147,41 +147,73 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 md:px-[64px] py-8 max-w-[1440px]">
-      {/* filter */}
-      <div className="flex justify-center md:justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-center md:text-left">Products</h1>
-        <div className="flex items-center gap-2">
-          <div className="relative">
+    <div className="container mx-auto px-4 md:px-[64px] pt-16 md:pt-10 pb-16 max-w-[1440px]">
+      {/* Title and Actions */}
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-[24px] md:text-[30px] font-semibold text-center md:text-left">Products</h1>
+      </div>
+      
+      {/* Mobile Filter and Add */}
+      <div className="flex justify-center gap-3 md:hidden mb-4">
+        <div className="w-[160px]">
+          <div className="relative w-full">
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
-              className="appearance-none bg-white border rounded px-5 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full appearance-none bg-white border border-gray-200 shadow-sm rounded px-3 h-[36px] text-gray-600 text-sm focus:outline-none"
             >
-              <option value="last-added">Last added</option>
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
+              <option value="last-added">Last added</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
           </div>
+        </div>
+        <div className="w-[120px]">
           <Link
             to="/products/create"
-            className="bg-[#4F46E5] text-white font-semibold text-sm px-6 py-2 rounded hover:bg-blue-700 transition"
+            className="w-full bg-[#4F46E5] text-white font-medium text-sm h-[36px] rounded hover:bg-[#4338CA] transition flex items-center justify-center shadow-sm"
           >
             Add Product
           </Link>
         </div>
       </div>
 
-      {/* Products */}
+      {/* Desktop Filter and Add */}
+      <div className="hidden md:flex items-center gap-4">
+        <div className="relative w-[200px]">
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="w-full appearance-none bg-white border border-gray-200 rounded px-4 h-[42px] text-gray-600 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
+          >
+            <option value="last-added">Last added</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        <Link
+          to="/products/create"
+          className="bg-[#4F46E5] text-white font-medium text-sm px-6 h-[42px] rounded hover:bg-[#4338CA] transition flex items-center justify-center"
+        >
+          Add Product
+        </Link>
+      </div>
+
+      {/* Products Grid */}
       <div className="bg-white rounded-sm px-4 py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="bg-white rounded border p-2">
+            <div key={product.id} className="bg-white rounded border p-4 md:p-2">
               <Link to={`/products/${product.id}`} className="block">
                 <div className="aspect-square overflow-hidden">
                   <img
@@ -190,12 +222,12 @@ const ProductsPage = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="pt-2 pb-1">
-                  <h3 className="text-sm text-gray-500 font-light min-h-[40px] line-clamp-2">{product.name}</h3>
+                <div className="pt-1 md:pt-2 pb-2">
+                  <h3 className="text-sm text-gray-500 font-light min-h-[20px] md:min-h-[40px] line-clamp-1 md:line-clamp-2">{product.name}</h3>
                   <p className="text-base font-medium text-gray-900">${product.price.toFixed(2)}</p>
                 </div>
               </Link>
-              <div className="flex items-center justify-between space-x-1 w-full">
+              <div className="flex items-center justify-between gap-6 md:gap-1 w-full">
                 {product.inCart ? (
                   <div className="flex-1">
                     <div className="flex items-center justify-between bg-[#4F46E5] h-6 rounded-sm px-2">
