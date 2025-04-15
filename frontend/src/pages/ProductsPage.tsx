@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import ProductService from "@/services/product.service";
 import { CartContext } from "../contexts/CartContext";
-import ProductQuantity from "@/components/ProductQuantity";
+import ProductQuantity from "@/components/products/ProductQuantity";
 
 interface Product {
   id: string;
@@ -145,7 +145,9 @@ const ProductsPage = () => {
                 </div>
               </Link>
               <div className="flex items-center justify-between gap-6 md:gap-1 w-full">
-                <ProductQuantity productId={product.id} />
+                <div className="flex-1">
+                  <ProductQuantity productId={product.id} />
+                </div>
                 <div className="flex-1">
                   <Link 
                     to={`/products/edit/${product.id}`} 

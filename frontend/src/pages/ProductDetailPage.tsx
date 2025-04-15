@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductService from '@/services/product.service';
-import CartService from '@/services/cart.service';
-import { Minus, Plus, Heart } from 'lucide-react';
+import ProductQuantity from '@/components/products/ProductQuantity';
 
 interface Product {
   id: string;
@@ -19,8 +18,6 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(0);
-  const [inCart, setInCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -63,40 +60,6 @@ const ProductDetailPage = () => {
     return <div className="flex justify-center items-center h-64">Product not found</div>;
   }
 
-  const handleAddToCart = async () => {
-    try {
-      if (!product) return;
-      await CartService.addToCart(product.id, 1);
-      setInCart(true);
-      setQuantity(1);
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-    }
-  };
-
-  const handleQuantityChange = async (type: 'increase' | 'decrease') => {
-    try {
-      if (!product) return;
-
-      const newQuantity = type === 'increase' ? quantity + 1 : quantity - 1;
-
-      if (type === 'increase' && newQuantity <= product.stock) {
-        await CartService.updateCartItem(product.id, newQuantity);
-        setQuantity(newQuantity);
-      } else if (type === 'decrease' && newQuantity >= 0) {
-        if (newQuantity === 0) {
-          await CartService.removeFromCart(product.id);
-          setInCart(false);
-        } else {
-          await CartService.updateCartItem(product.id, newQuantity);
-        }
-        setQuantity(newQuantity);
-      }
-    } catch (err) {
-      console.error('Error updating cart:', err);
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 md:px-[64px] pt-16 md:pt-10 pb-16 max-w-[1440px]">
       <div className="mb-4 md:mb-8">
@@ -136,37 +99,15 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Add to cart */}
-            <div className="mt-8 flex items-center justify-evenly gap-2">
-              {inCart ? (
-                <div className="w-[120px]">
-                  <div className="flex items-center justify-between bg-[#4F46E5] h-9 rounded-sm px-2">
-                    <button 
-                      onClick={() => handleQuantityChange('decrease')}
-                      className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-center text-xs text-white">{quantity}</span>
-                    <button 
-                      onClick={() => handleQuantityChange('increase')}
-                      className="text-white hover:bg-[#4338CA] rounded-sm transition h-full flex items-center"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
+            <div className="mt-8 flex items-center justify-evenly md:justify-start gap-2">
+              <div className="w-[160px] md:w-[120px]">
+                <div className="h-9">
+                  <ProductQuantity productId={product.id} variant="detail" />
                 </div>
-              ) : (
-                <button 
-                  onClick={handleAddToCart}
-                  className="w-[120px] h-9 text-xs text-white font-semibold bg-[#4F46E5] hover:bg-[#4338CA] rounded-sm transition flex items-center justify-center"
-                  disabled={!product?.stock}
-                >
-                  Add To Cart
-                </button>
-              )}
+              </div>
               <Link 
                 to={`/products/edit/${product?.id}`} 
-                className="block w-[120px]"
+                className="block w-[160px] md:w-[120px]"
               >
                 <button className="w-full h-9 text-xs text-gray-600 font-semibold hover:bg-gray-100 transition border border-gray-300 rounded-sm flex items-center justify-center">
                   Edit
