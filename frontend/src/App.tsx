@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthContext, AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import Layout from "./components/layout/Layout";
+import { SearchProvider } from "./contexts/SearchContext";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -85,11 +86,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
-          <Router>
-            <Layout>
-              <AppRoutes />
-            </Layout>
-          </Router>
+          <SearchProvider>
+            <Router>
+              <Layout>
+                <AppRoutes />
+              </Layout>
+            </Router>
+          </SearchProvider>
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>

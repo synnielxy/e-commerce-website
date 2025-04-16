@@ -1,9 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronsLeft, ChevronsRight, Minus, Plus } from "lucide-react";
 import ProductService from "@/services/product.service";
 import CartService from "@/services/cart.service";
 import { CartContext } from "../contexts/CartContext";
+import { useSearch } from "../contexts/SearchContext";
 
 interface Product {
   id: string;
@@ -22,25 +23,39 @@ const ProductsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const { setCart } = useContext(CartContext);
-
+  const { searchQuery } = useSearch();
+  
+  // Combine both product fetching logic into a single useEffect
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        
+        // Always fetch products using your existing service
         const data = await ProductService.getProducts({
           sort: sortOption,
           page: currentPage,
         });
-
-        setProducts(
-          data.products.map((p) => ({
-            id: p.id,
-            name: p.name,
-            price: Number(p.price),
-            imageUrl: p.imageUrl ?? "/no-image.png",
-          }))
-        );
+        
+        // Get the full list of products
+        let processedProducts = data.products.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: Number(p.price),
+          imageUrl: p.imageUrl ?? "/no-image.png",
+        }));
+        
+        // If there's a search query, filter products on the frontend
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          processedProducts = processedProducts.filter(product => 
+            product.name.toLowerCase().includes(query)
+          );
+        }
+        
+        setProducts(processedProducts);
         setPages(data.pagination.pages);
+        
         setError(null);
       } catch (err) {
         setError("Failed to fetch products");
@@ -49,9 +64,9 @@ const ProductsPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
-  }, [currentPage, sortOption]); // Remove cart dependency since we don't need it anymore
+  }, [currentPage, sortOption, searchQuery]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(e.target.value);

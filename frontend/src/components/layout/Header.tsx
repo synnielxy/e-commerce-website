@@ -1,11 +1,13 @@
-import { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Search, ShoppingCart, User, Star } from "lucide-react";
 import CartOverlay from "../cart/CartOverlay";
 import { CartContext } from "../../contexts/CartContext";
+import {useSearch} from "../../contexts/SearchContext";
 
 interface HeaderProps {
+  onSearch?: (query: string) => void;
   className?: string;
 }
 
@@ -14,6 +16,31 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const {searchQuery, setSearchQuery} = useSearch();
+  const [inputValue, setInputValue] = useState("");
+  const location = useLocation();
+
+  // Handle input change with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Check if user is searching for different products
+      console.log("inputValue", inputValue);
+      console.log("searchQuery", searchQuery);
+      console.log("location.pathname", location.pathname);
+      console.log("navigate", navigate);
+
+      if (inputValue !== searchQuery) {
+        setSearchQuery(inputValue);
+
+        if (location.pathname !== '/products') {
+          navigate('/products');
+        }
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [inputValue, searchQuery, setSearchQuery, navigate, location.pathname]);
+
 
   const handleLogout = async () => {
     await logout();
@@ -47,6 +74,8 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
                 <input
                   type="text"
                   placeholder="Search"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                   className="w-full p-2.5 pl-4 pr-8 rounded text-black text-sm h-10"
                 />
                 <Search className="absolute right-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -145,6 +174,8 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               <input
                 type="text"
                 placeholder="Search"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 className="w-full px-4 py-2 rounded bg-white text-black text-sm h-9"
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
