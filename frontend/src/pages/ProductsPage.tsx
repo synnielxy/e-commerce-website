@@ -10,6 +10,8 @@ interface Product {
   name: string;
   price: number;
   imageUrl: string;
+  inCart?: boolean;
+  quantity?: number;
 }
 
 const ProductsPage = () => {
@@ -79,7 +81,7 @@ const ProductsPage = () => {
       const product = products.find((p) => p.id === productId);
       if (!product) return;
 
-      const newQuantity = Math.max(0, product.quantity + change);
+      const newQuantity = Math.max(0, (product.quantity ?? 0) + change);
 
       if (newQuantity === 0) {
         await CartService.removeFromCart(productId);
