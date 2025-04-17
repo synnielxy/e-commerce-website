@@ -159,10 +159,10 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
                   <div className="relative">
                     <ShoppingCart className="w-5 h-5" />
                     <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                      2
+                      {cart?.totalItems}
                     </span>
                   </div>
-                  <span className="text-xs">$0.00</span>
+                  <span className="text-xs">${cart?.totalPrice?.toFixed(2) || "0.00"}</span>
                 </div>
               )}
             </div>
