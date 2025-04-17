@@ -17,18 +17,22 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     message: string;
     availableStock?: number;
   } | null>(null);
+  const [backendError, setBackendError] = useState<string | null>(null);
 
-  const handleIncreaseQuantity = async (
-    productId: string,
-    currentQuantity: number
-  ) => {
+  const handleCartOperation = async (operation: () => Promise<any>) => {
     try {
       setError(null);
-      await CartService.addToCart(productId, 1);
+      setBackendError(null);
+      await operation();
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
     } catch (error: any) {
-      console.log("123", error.response.data);
+      if (error.message === "Network Error" || !error.response) {
+        setBackendError(
+          "Unable to connect to the server. Please try again later."
+        );
+        return;
+      }
       if (
         error.response?.status === 400 &&
         error.response?.data?.message === "Insufficient stock"
@@ -39,46 +43,35 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
         });
       } else {
         console.error("Error updating cart:", error);
+        setBackendError(
+          "An unexpected error occurred. Please try again later."
+        );
       }
     }
+  };
+
+  const handleIncreaseQuantity = async (
+    productId: string,
+    currentQuantity: number
+  ) => {
+    await handleCartOperation(() => CartService.addToCart(productId, 1));
   };
 
   const handleDecreaseQuantity = async (
     productId: string,
     currentQuantity: number
   ) => {
-    try {
-      setError(null);
+    await handleCartOperation(async () => {
       if (currentQuantity > 1) {
         await CartService.updateCartItem(productId, currentQuantity - 1);
       } else {
         await CartService.removeFromCart(productId);
       }
-      const updatedCart = await CartService.getCart();
-      setCart(updatedCart);
-    } catch (error: any) {
-      if (
-        error.response?.status === 400 &&
-        error.response?.data?.message === "Insufficient stock"
-      ) {
-        setError({
-          message: "Insufficient stock",
-          availableStock: error.response.data.availableStock,
-        });
-      } else {
-        console.error("Error updating cart:", error);
-      }
-    }
+    });
   };
 
   const handleRemoveItem = async (productId: string) => {
-    try {
-      await CartService.removeFromCart(productId);
-      const updatedCart = await CartService.getCart();
-      setCart(updatedCart);
-    } catch (error) {
-      console.error("Error removing item from cart:", error);
-    }
+    await handleCartOperation(() => CartService.removeFromCart(productId));
   };
 
   useEffect(() => {
@@ -100,6 +93,9 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
           availableStock={error.availableStock}
           onClose={() => setError(null)}
         />
+      )}
+      {backendError && (
+        <Alert message={backendError} onClose={() => setBackendError(null)} />
       )}
 
       {/* Backdrop for mobile and desktop */}
