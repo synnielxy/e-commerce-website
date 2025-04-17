@@ -5,6 +5,7 @@ import ProductQuantity from "@/components/products/ProductQuantity";
 import CartService from "@/services/cart.service";
 import { Minus, Plus, Heart } from "lucide-react";
 import { CartContext } from "../contexts/CartContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 interface Product {
   id: string;
@@ -24,6 +25,8 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(0);
   const [inCart, setInCart] = useState(false);
   const { setCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -190,14 +193,15 @@ const ProductDetailPage = () => {
                   Add To Cart
                 </button>
               )}
-              <Link
-                to={`/products/edit/${product?.id}`}
-                className="block w-[120px]"
-              >
-                <button className="w-full h-9 text-xs text-gray-600 font-semibold hover:bg-gray-100 transition border border-gray-300 rounded-sm flex items-center justify-center">
-                  Edit
-                </button>
-              </Link>
+              {isAdmin && (
+                <div className="w-[120px]">
+                  <Link to={`/products/edit/${product.id}`} className="block w-full">
+                    <button className="w-full h-9 text-sm text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded flex items-center justify-center">
+                      Edit
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

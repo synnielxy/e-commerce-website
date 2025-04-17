@@ -5,6 +5,7 @@ import ProductService from "@/services/product.service";
 import CartService from "@/services/cart.service";
 import { CartContext } from "../contexts/CartContext";
 import { useSearch } from "../contexts/SearchContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 interface Product {
   id: string;
@@ -24,6 +25,8 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const { setCart } = useContext(CartContext);
   const { searchQuery } = useSearch();
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.role === 'admin';
   
   // Combine both product fetching logic into a single useEffect
   useEffect(() => {
@@ -174,12 +177,14 @@ const ProductsPage = () => {
               </svg>
             </div>
           </div>
-          <Link
-            to="/products/create"
-            className="bg-[#4F46E5] text-white font-medium text-sm px-6 h-[42px] rounded hover:bg-[#4338CA] transition flex items-center justify-center"
-          >
-            Add Product
-          </Link>
+          {isAdmin && (
+            <Link
+              to="/products/create"
+              className="bg-[#4F46E5] text-white font-medium text-sm px-6 h-[42px] rounded hover:bg-[#4338CA] transition flex items-center justify-center"
+            >
+              Add Product
+            </Link>
+          )}
         </div>
       </div>
 
@@ -213,14 +218,16 @@ const ProductsPage = () => {
             </div>
           </div>
         </div>
-        <div className="w-[120px]">
-          <Link
-            to="/products/create"
-            className="w-full bg-[#4F46E5] text-white font-medium text-sm h-[36px] rounded hover:bg-[#4338CA] transition flex items-center justify-center shadow-sm"
-          >
-            Add Product
-          </Link>
-        </div>
+        {isAdmin && (
+          <div className="w-[120px]">
+            <Link
+              to="/products/create"
+              className="w-full bg-[#4F46E5] text-white font-medium text-sm h-[36px] rounded hover:bg-[#4338CA] transition flex items-center justify-center shadow-sm"
+            >
+              Add Product
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Products Grid */}
@@ -279,16 +286,18 @@ const ProductsPage = () => {
                     </button>
                   </div>
                 )}
-                <div className="flex-1">
-                  <Link
-                    to={`/products/edit/${product.id}`}
-                    className="block w-full"
-                  >
-                    <button className="w-full h-6 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm flex items-center justify-center">
-                      Edit
-                    </button>
-                  </Link>
-                </div>
+                {isAdmin && (
+                  <div className="flex-1">
+                    <Link
+                      to={`/products/edit/${product.id}`}
+                      className="block w-full"
+                    >
+                      <button className="w-full h-6 text-[10px] text-gray-600 hover:text-gray-900 transition border border-gray-300 rounded-sm flex items-center justify-center">
+                        Edit
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           ))}
