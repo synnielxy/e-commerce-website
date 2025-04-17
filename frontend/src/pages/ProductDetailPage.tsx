@@ -6,6 +6,7 @@ import { Minus, Plus, Heart } from "lucide-react";
 import { CartContext } from "../contexts/CartContext";
 import { AuthContext } from "../contexts/AuthContext";
 import Alert from "../components/common/Alert";
+import { message } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -79,6 +80,7 @@ const ProductDetailPage = () => {
         });
       } else {
         console.error("Error adding to cart:", error);
+        message.error("Failed to add to cart");
       }
     }
   };
@@ -109,6 +111,7 @@ const ProductDetailPage = () => {
       }
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
+      message.success("Successfully updated cart");
     } catch (error: any) {
       if (
         error.response?.status === 400 &&
@@ -120,6 +123,7 @@ const ProductDetailPage = () => {
         });
       } else {
         console.error("Error updating cart:", error);
+        message.error("Failed to update cart");
       }
     }
   };
