@@ -13,6 +13,7 @@ import { CartContext } from "../contexts/CartContext";
 import { useSearch } from "../contexts/SearchContext";
 import { AuthContext } from "../contexts/AuthContext";
 import Alert from "../components/common/Alert";
+import { message } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -132,6 +133,7 @@ const ProductsPage = () => {
       // Refetch cart to get updated quantities
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
+      message.success("Successfully added to cart");
     } catch (error: any) {
       if (
         error.response?.status === 400 &&
@@ -143,6 +145,7 @@ const ProductsPage = () => {
         });
       } else {
         console.error("Error adding to cart:", error);
+        message.error("Failed to add to cart");
       }
     }
   };
@@ -161,6 +164,7 @@ const ProductsPage = () => {
       // Refetch cart to get updated quantities
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
+      message.success("Successfully updated cart");
     } catch (error: any) {
       if (
         error.response?.status === 400 &&
@@ -172,6 +176,7 @@ const ProductsPage = () => {
         });
       } else {
         console.error("Error updating cart:", error);
+        message.error("Failed to update cart");
       }
     }
   };
