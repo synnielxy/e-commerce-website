@@ -1,7 +1,8 @@
 import { X, Plus, Minus } from "lucide-react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { CartContext } from "../../contexts/CartContext";
 import { CartService } from "../../services/cart.service";
+import Alert from "../common/Alert";
 
 interface CartOverlayProps {
   isOpen: boolean;
@@ -11,17 +12,34 @@ interface CartOverlayProps {
 const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
   const [discountCode, setDiscountCode] = useState("20 DOLLAR OFF");
   const { cart, setCart } = useContext(CartContext);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const [error, setError] = useState<{
+    message: string;
+    availableStock?: number;
+  } | null>(null);
 
   const handleIncreaseQuantity = async (
     productId: string,
     currentQuantity: number
   ) => {
     try {
-      await CartService.updateCartItem(productId, currentQuantity + 1);
+      setError(null);
+      await CartService.addToCart(productId, 1);
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
-    } catch (error) {
-      console.error("Error updating cart:", error);
+    } catch (error: any) {
+      console.log("123", error.response.data);
+      if (
+        error.response?.status === 400 &&
+        error.response?.data?.message === "Insufficient stock"
+      ) {
+        setError({
+          message: "Insufficient stock",
+          availableStock: error.response.data.availableStock,
+        });
+      } else {
+        console.error("Error updating cart:", error);
+      }
     }
   };
 
@@ -30,6 +48,7 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     currentQuantity: number
   ) => {
     try {
+      setError(null);
       if (currentQuantity > 1) {
         await CartService.updateCartItem(productId, currentQuantity - 1);
       } else {
@@ -37,8 +56,18 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
       }
       const updatedCart = await CartService.getCart();
       setCart(updatedCart);
-    } catch (error) {
-      console.error("Error updating cart:", error);
+    } catch (error: any) {
+      if (
+        error.response?.status === 400 &&
+        error.response?.data?.message === "Insufficient stock"
+      ) {
+        setError({
+          message: "Insufficient stock",
+          availableStock: error.response.data.availableStock,
+        });
+      } else {
+        console.error("Error updating cart:", error);
+      }
     }
   };
 
@@ -52,8 +81,27 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
     }
   };
 
+  useEffect(() => {
+    const calculateFinalPrice = () => {
+      const subtotal = cart?.totalPrice ?? 0;
+      const tax = subtotal * 0.1;
+      const discount = discountCode === "20 DOLLAR OFF" ? 20 : 0;
+      const total = Math.max(0, subtotal + tax - discount);
+      setFinalPrice(total);
+    };
+    calculateFinalPrice();
+  }, [cart, discountCode]);
+
   return (
     <>
+      {error && (
+        <Alert
+          message={error.message}
+          availableStock={error.availableStock}
+          onClose={() => setError(null)}
+        />
+      )}
+
       {/* Backdrop for mobile and desktop */}
       {/* <div
         className={`
@@ -66,7 +114,7 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
       {/* Cart Overlay */}
       <div
         className={`
-          fixed z-50 bg-white transition-transform duration-300 ease-in-out
+          fixed z-40 bg-white transition-transform duration-300 ease-in-out
           md:w-[400px] md:top-0 md:h-auto md:rounded-bl-lg md:shadow-lg
           w-full top-[54px] bottom-0 right-0
           ${isOpen ? "translate-x-0" : "translate-x-full"}
@@ -155,15 +203,15 @@ const CartOverlay = ({ isOpen, onClose }: CartOverlayProps) => {
             <span>Tax</span>
             <span>${((cart?.totalPrice ?? 0) * 0.1).toFixed(2)}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Discount</span>
-            <span className="text-green-600">
-              {discountCode === "20 DOLLAR OFF" ? `-$20.00` : `-$0.00`}
-            </span>
-          </div>
+          {discountCode === "20 DOLLAR OFF" && (
+            <div className="flex justify-between">
+              <span>Discount</span>
+              <span className="text-green-600">-$20.00</span>
+            </div>
+          )}
           <div className="flex justify-between font-semibold pt-2 border-t">
             <span>Estimated total</span>
-            <span>${(cart?.totalPrice ?? 0).toFixed(2)}</span>
+            <span>${finalPrice.toFixed(2)}</span>
           </div>
         </div>
 

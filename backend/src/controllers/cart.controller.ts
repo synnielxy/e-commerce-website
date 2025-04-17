@@ -34,6 +34,14 @@ export const addToCart = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    // Check if requested quantity exceeds available stock
+    if (product.stock < quantity) {
+      return res.status(400).json({
+        message: "Insufficient stock",
+        availableStock: product.stock,
+      });
+    }
+
     // Find or create cart
     let cart = await Cart.findOne({ user: req.user.id });
     if (!cart) {
@@ -46,8 +54,18 @@ export const addToCart = async (req: Request, res: Response) => {
     );
 
     if (existingItemIndex !== -1) {
+      // Check if total quantity (existing + new) exceeds stock
+      const totalQuantity =
+        cart.items[existingItemIndex].quantity + parseInt(quantity);
+      if (totalQuantity > product.stock) {
+        return res.status(400).json({
+          message: "Insufficient stock",
+          availableStock: product.stock,
+          currentCartQuantity: cart.items[existingItemIndex].quantity,
+        });
+      }
       // Update quantity if product exists
-      cart.items[existingItemIndex].quantity += parseInt(quantity) || 0;
+      cart.items[existingItemIndex].quantity = totalQuantity;
     } else {
       // Add new item if product doesn't exist
       cart.items.push({
@@ -76,6 +94,12 @@ export const updateCartItem = async (req: Request, res: Response) => {
     const { productId } = req.params;
     const { quantity } = req.body;
 
+    // Find the product to check stock
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     const cart = await Cart.findOne({ user: req.user.id });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -87,6 +111,14 @@ export const updateCartItem = async (req: Request, res: Response) => {
 
     if (itemIndex === -1) {
       return res.status(404).json({ message: "Item not found in cart" });
+    }
+
+    // Check if requested quantity exceeds available stock
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        message: "Insufficient stock",
+        availableStock: product.stock,
+      });
     }
 
     if (quantity <= 0) {
