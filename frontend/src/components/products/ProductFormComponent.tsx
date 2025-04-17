@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -18,13 +18,22 @@ interface FormValues {
   imageUrl: string;
 }
 
-const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode}) => {
+const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMode }) => {
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState("");
   const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const {register,handleSubmit,formState: { errors },watch,setValue,} = useForm<FormValues>({defaultValues: {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    trigger,
+  } = useForm<FormValues>({
+    defaultValues: {
       name: "",
       description: "",
       category: "category1",
@@ -32,11 +41,12 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
       stock: "",
       imageUrl: "",
     },
+    mode: "onBlur", // Only validate when focus leaves the field
   });
 
-  {
-    /* fetch product data for edit mode */
-  }
+  // URL validation regex pattern - simpler version
+  const urlPattern = /^(https?:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+
   useEffect(() => {
     if (isEditMode && productId) {
       setLoading(true);
@@ -47,6 +57,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
         .then((response) => {
           const product = response.data.product;
           console.log("Fetched product:", response.data);
+          
           setValue("name", product.name);
           setValue("description", product.description);
           setValue("category", product.category);
@@ -64,12 +75,16 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
     }
   }, [isEditMode, productId, setValue]);
 
-  {
-    /* submit form data for create mode */
-  }
   const onSubmit = async (data: FormValues) => {
+    // Validate image URL before submission
+    if (data.imageUrl && !validateImageUrl(data.imageUrl)) {
+      alert("Please provide a valid image URL before submitting.");
+      return;
+    }
+    
+    setSubmitting(true);
+    
     try {
-      console.log("Product data:", data);
       const productData = {
         name: data.name,
         description: data.description,
@@ -80,49 +95,65 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
       };
 
       if (isEditMode && productId) {
-        console.log(`Updating product with ID: ${productId}`);
         await axios.put(
           `http://localhost:3000/api/products/${productId}`,
           productData,
           { withCredentials: true }
         );
       } else {
-        console.log("Creating new product");
-        const response = await axios.post(
+        await axios.post(
           "http://localhost:3000/api/products",
           productData,
           { withCredentials: true }
         );
-        console.log("Product created successfully:", response.data);
       }
+      
+      // Success - navigate away
       navigate("/products");
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Failed to save product. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  {
-    /* handle 'upload' button click by setting image preview state*/
-  }
+  // Separate function to validate URL to ensure consistency
+  const validateImageUrl = (url: string): boolean => {
+    if (!url) return false;
+    return urlPattern.test(url);
+  };
+
   const handleImageUpload = () => {
     const imageUrl = watch("imageUrl");
-    if (imageUrl) {
-      setImagePreview(imageUrl);
-      setImageError(false);
-    } else {
+    
+    // Reset error state
+    setImageError(false);
+    
+    if (!imageUrl) {
       setImagePreview("");
+      return;
     }
+    
+    // Validate URL format
+    if (!validateImageUrl(imageUrl)) {
+      setImageError(true);
+      setImagePreview("");
+      return;
+    }
+    
+    // If URL format is valid, set preview
+    setImagePreview(imageUrl);
   };
 
-  // reusable css format for form labels and input boxes
+  // Reusable CSS formats
   const labelFormat = "block text-base font-medium mb-2 px-1 text-[#6B7280]";
-  const inputBoxFormat =
-    "w-full px-3 py-3 border text-base text-gray-600 border-gray-300 rounded-[0.2rem] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500";
+  const inputBoxFormat = "w-full px-3 py-3 border text-base text-gray-600 border-gray-300 rounded-[0.2rem] focus:outline-none focus:ring-indigo-500 focus:border-indigo-500";
+  const errorInputBoxFormat = "w-full px-3 py-3 border text-base text-gray-600 border-red-500 rounded-[0.2rem] focus:outline-none focus:ring-red-500 focus:border-red-500";
 
   return (
     <div className="px-4 py-4 sm:py-8 max-w-6xl mx-auto">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 sm:text-left text-center">
+      <h1 className="text-xl mt-10 sm:mt-5 sm:text-2xl font-bold mb-4 sm:mb-6 sm:text-left text-center">
         {isEditMode ? "Edit Product" : "Create Product"}
       </h1>
 
@@ -132,18 +163,26 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
         </div>
       ) : (
         <div className="bg-white w-full min-w-[310px] max-w-[660px] py-10 mx-auto sm:ml-0 p-4 sm:p-8 md:p-12 rounded-md">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             {/* Product name */}
             <div className="mb-6">
-              <label className={labelFormat}>Product name</label>
+              <label className={labelFormat}>
+                Product name
+                <span className="text-red-500">*</span>
+              </label>
 
               <input
-                {...register("name", { required: true })}
-                className={inputBoxFormat}
+                {...register("name", { 
+                  required: "Product name is required",
+                  minLength: { value: 3, message: "Name must be at least 3 characters" },
+                  maxLength: { value: 100, message: "Name cannot exceed 100 characters" }
+                })}
+                className={errors.name ? errorInputBoxFormat : inputBoxFormat}
+                aria-invalid={errors.name ? "true" : "false"}
               />
               {errors.name && (
-                <span className="text-red-500 text-sm">
-                  This field is required
+                <span className="text-red-500 text-sm mt-1 block">
+                  {errors.name.message}
                 </span>
               )}
             </div>
@@ -153,10 +192,17 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
               <label className={labelFormat}>Product Description</label>
 
               <textarea
-                {...register("description")}
+                {...register("description", {
+                  maxLength: { value: 500, message: "Description cannot exceed 500 characters" }
+                })}
                 rows={4}
-                className={inputBoxFormat}
+                className={errors.description ? errorInputBoxFormat : inputBoxFormat}
               />
+              {errors.description && (
+                <span className="text-red-500 text-sm mt-1 block">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
 
             {/* Category and price */}
@@ -178,16 +224,24 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
               </div>
 
               <div className="mb-4 sm:mb-6">
-                <label className={labelFormat}>Price</label>
+                <label className={labelFormat}>
+                  Price
+                  <span className="text-red-500">*</span>
+                </label>
+                
                 <input
                   type="number"
-                  {...register("price", { required: true })}
-                  className={inputBoxFormat}
+                  step="0.01"
+                  {...register("price", { 
+                    required: "Price is required",
+                    min: { value: 0.01, message: "Price must be greater than 0" }
+                  })}
+                  className={errors.price ? errorInputBoxFormat : inputBoxFormat}
                 />
 
                 {errors.price && (
-                  <span className="text-red-500 text-sm">
-                    This field is required
+                  <span className="text-red-500 text-sm mt-1 block">
+                    {errors.price.message}
                   </span>
                 )}
               </div>
@@ -198,27 +252,37 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
               <div className="sm:col-span-2">
                 <label className={`${labelFormat} p-0`}>
                   In Stock Quantity
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
                   type="number"
-                  {...register("stock", { required: true })}
-                  className={`${inputBoxFormat}`}
+                  {...register("stock", { 
+                    required: "Stock quantity is required",
+                    min: { value: 0, message: "Stock cannot be negative" }
+                  })}
+                  className={errors.stock ? errorInputBoxFormat : inputBoxFormat}
                 />
 
                 {errors.stock && (
-                  <span className="text-red-500 text-sm">
-                    This field is required
+                  <span className="text-red-500 text-sm mt-1 block">
+                    {errors.stock.message}
                   </span>
                 )}
               </div>
+              
               <div className="sm:col-span-5">
-                <label className={labelFormat}>Add Image Link</label>
+                <label className={labelFormat}>
+                  Add Image Link
+                  <span className="text-red-500">*</span>
+                </label>
                 <div className="relative flex">
                   <input
-                    {...register("imageUrl")}
+                    {...register("imageUrl", {
+                      required: "Image URL is required"
+                    })}
                     placeholder="http://"
-                    className={inputBoxFormat}
+                    className={errors.imageUrl || imageError ? errorInputBoxFormat : inputBoxFormat}
                   />
                   <button
                     type="button"
@@ -228,6 +292,16 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
                     Upload
                   </button>
                 </div>
+                {errors.imageUrl && (
+                  <span className="text-red-500 text-sm mt-1 block">
+                    {errors.imageUrl.message}
+                  </span>
+                )}
+                {imageError && !errors.imageUrl && (
+                  <span className="text-red-500 text-sm mt-1 block">
+                    Please enter a valid URL (e.g., https://example.com/image.jpg)
+                  </span>
+                )}
               </div>
             </div>
 
@@ -245,7 +319,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
                   {imageError ? (
                     <>
                       <svg
-                        className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400"
+                        className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-red-400"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -254,11 +328,11 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                         />
                       </svg>
-                      <p className="mt-1 text-sm text-gray-500">
-                        image is not valid!
+                      <p className="mt-1 text-sm text-red-500">
+                        Invalid image URL!
                       </p>
                     </>
                   ) : (
@@ -277,7 +351,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
                         />
                       </svg>
                       <p className="mt-1 text-sm text-gray-500">
-                        image preview!
+                        Image preview!
                       </p>
                     </>
                   )}
@@ -288,9 +362,24 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({productId, isEditMode
             <div className="flex justify-center sm:justify-start">
               <button
                 type="submit"
-                className="w-[130px] bg-indigo-600 text-white font-medium py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto"
+                disabled={submitting}
+                className={`w-[130px] font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto ${
+                  submitting 
+                    ? "bg-indigo-400 cursor-not-allowed" 
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                }`}
               >
-                {isEditMode ? "Edit Product" : "Add Product"}
+                {submitting ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {isEditMode ? "Updating..." : "Creating..."}
+                  </span>
+                ) : (
+                  isEditMode ? "Edit Product" : "Add Product"
+                )}
               </button>
             </div>
           </form>
