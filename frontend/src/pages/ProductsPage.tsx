@@ -273,14 +273,16 @@ const ProductsPage = () => {
               </div>
             </div>
           </div>
-          <div className="w-[120px]">
-            <Link
-              to="/products/create"
-              className="w-full bg-[#4F46E5] text-white font-medium text-sm h-[36px] rounded hover:bg-[#4338CA] transition flex items-center justify-center shadow-sm"
-            >
-              Add Product
-            </Link>
-          </div>
+          {user?.role === "admin" && (
+            <div className="w-[120px]">
+              <Link
+                to="/products/create"
+                className="w-full bg-[#4F46E5] text-white font-medium text-sm h-[36px] rounded hover:bg-[#4338CA] transition flex items-center justify-center shadow-sm"
+              >
+                Add Product
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Products Grid */}

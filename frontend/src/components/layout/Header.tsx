@@ -4,7 +4,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { Search, ShoppingCart, User, Star } from "lucide-react";
 import CartOverlay from "../cart/CartOverlay";
 import { CartContext } from "../../contexts/CartContext";
-import {useSearch} from "../../contexts/SearchContext";
+import { useSearch } from "../../contexts/SearchContext";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const {searchQuery, setSearchQuery} = useSearch();
+  const { searchQuery, setSearchQuery } = useSearch();
   const [inputValue, setInputValue] = useState("");
   const location = useLocation();
 
@@ -32,15 +32,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       if (inputValue !== searchQuery) {
         setSearchQuery(inputValue);
 
-        if (location.pathname !== '/products') {
-          navigate('/products');
+        if (location.pathname !== "/products") {
+          navigate("/products");
         }
       }
     }, 300);
 
     return () => clearTimeout(timer);
   }, [inputValue, searchQuery, setSearchQuery, navigate, location.pathname]);
-
 
   const handleLogout = async () => {
     await logout();
@@ -121,9 +120,11 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               >
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6" />
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                    {cart?.totalItems}
-                  </span>
+                  {cart && cart.totalItems > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                      {cart.totalItems}
+                    </span>
+                  )}
                 </div>
                 <span className="ml-3 text-sm">
                   ${cart?.totalPrice?.toFixed(2) || "0.00"}
@@ -145,10 +146,20 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 
             {/* Right Icons for Mobile */}
             <div className="flex items-center space-x-7">
-              <div className="relative">
-                <User className="w-5 h-5" />
-                {isAdmin && (
-                  <Star className="w-2.5 h-2.5 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+              <div className="flex items-center space-x-2">
+                <div className="relative">
+                  <User className="w-5 h-5" />
+                  {isAdmin && (
+                    <Star className="w-2.5 h-2.5 text-yellow-400 absolute -bottom-1 -right-1 fill-yellow-400" />
+                  )}
+                </div>
+                {isAuthenticated && (
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm text-white hover:text-gray-300"
+                  >
+                    Sign Out
+                  </button>
                 )}
               </div>
               {isAuthenticated && (
@@ -158,11 +169,15 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
                 >
                   <div className="relative">
                     <ShoppingCart className="w-5 h-5" />
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
-                      {cart?.totalItems}
-                    </span>
+                    {cart && cart.totalItems > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                        {cart.totalItems}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-xs">${cart?.totalPrice?.toFixed(2) || "0.00"}</span>
+                  <span className="text-xs">
+                    ${cart?.totalPrice?.toFixed(2) || "0.00"}
+                  </span>
                 </div>
               )}
             </div>
