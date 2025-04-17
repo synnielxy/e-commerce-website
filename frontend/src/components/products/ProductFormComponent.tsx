@@ -175,7 +175,8 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
                 {...register("name", { 
                   required: "Product name is required",
                   minLength: { value: 3, message: "Name must be at least 3 characters" },
-                  maxLength: { value: 100, message: "Name cannot exceed 100 characters" }
+                  maxLength: { value: 100, message: "Name cannot exceed 100 characters" },
+              
                 })}
                 className={errors.name ? errorInputBoxFormat : inputBoxFormat}
                 aria-invalid={errors.name ? "true" : "false"}
@@ -259,7 +260,7 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productId, isEditMod
                   type="number"
                   {...register("stock", { 
                     required: "Stock quantity is required",
-                    min: { value: 0, message: "Stock cannot be negative" }
+                    min: { value: 1, message: "Stock cannot be negative" }
                   })}
                   className={errors.stock ? errorInputBoxFormat : inputBoxFormat}
                 />
